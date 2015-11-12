@@ -1,0 +1,30 @@
+[
+  {
+    "id": "product-1",
+    "name": "Abondance (France)",
+    "description": "https://fr.wikipedia.org/wiki/Abondance_(race_bovine)",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Abondance_cow_profile.jpg/280px-Abondance_cow_profile.jpg",
+    "price": 789
+  },
+  {
+    "id": "product-2",
+    "name": "Charolaise (France)",
+    "description": "https://fr.wikipedia.org/wiki/Charolaise",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Taureau_charolais.jpg/280px-Taureau_charolais.jpg",
+    "price": 989
+  },
+  {
+    "id": "product-3",
+    "name": "Simmental (France)",
+    "description": "https://fr.wikipedia.org/wiki/Simmental_fran%C3%A7aise",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Simmental-vache.JPG/250px-Simmental-vache.JPG",
+    "price": 1129
+  },
+  {
+    "id": "product-4",
+    "name": "Texas Longhorn (USA)",
+    "description": "https://fr.wikipedia.org/wiki/Texas_Longhorn",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/1/1e/Texas_Longhorn.jpg",
+    "price": 1029
+  }
+]

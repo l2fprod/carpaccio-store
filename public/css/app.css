@@ -1,0 +1,23 @@
+html,
+body {
+  font-family: Helvetica, Roboto, 'Segoe UI', Calibri, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+/**
+ * Site header
+ */
+.navbar {
+  background-color: #55acee !important;
+  border-radius: 0px;
+}
+
+.navbar .navbar-brand {
+  color: #FFF;
+}
+
+.navbar-toggle .icon-bar {
+  background: #FFF;
+}

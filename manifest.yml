@@ -1,0 +1,4 @@
+applications:
+- name: carpaccio-store
+  host: carpaccio-store
+  memory: 256M

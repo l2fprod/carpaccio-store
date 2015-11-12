@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="css/app.css">
 </head>
 
-<body>
+<body ng-controller="AppController" ng-cloak>
   <nav class="navbar">
     <div class="container">
       <div class="navbar-header">
@@ -38,51 +38,48 @@
 
   <div class="container">
     <h2>Select a product</h2>
-    <div>
+    
+    <div ng-repeat="product in data.products">
       <div>
         <label>
-          <input type="radio" name="product" value="product-1"> Abondance
+          <input type="radio" ng-model="data.cart.product" name="product" ng-value="product"> {{product.name}}
         </label>
       </div>
-      <div>789 euros</div>
+      <div>{{product.price}} euros</div>
     </div>
-
-    <div>
-      <div>
-        <label>
-          <input type="radio" name="product" value="product-2"> Charolaise
-        </label>
-      </div>
-      <div>999 euros</div>
-    </div>
-
+    
     <h2>Type a quantity</h2>
     <div>
-      <input type="integer" id="quantity" value="1">
+      <input type="integer" id="quantity" value="1" ng-model="data.cart.quantity">
     </div>
 
     <h2>Billing - Pick a state</h2>
     <div>
-      <select>
-        <option>CA</option>
-        <option>UT</option>
-        <option>CA</option>
+      <select ng-model="data.cart.state">
+        <option value="CA">California</option>
+        <option value="UT">Utah</option>
+        <option value="TX">Texas</option>
       </select>
     </div>
 
     <h2>Price before taxes</h2>
     <div>
-      ...
+      {{priceBeforeTaxes()}} euros
     </div>
-    
+
     <h2>Price to be paid</h2>
     <div class="alert alert-danger">
       No pricing engine found - we can't sell :(
     </div>
-    
+
     <button class="btn btn-info">Register a pricing engine</button>
-    
+
   </div>
+
+  <script src="vendor/angular/angular.min.js"></script>
+  <script src="vendor/jquery/dist/jquery.min.js"></script>
+  <script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="js/app.js"></script>
 </body>
 <!--
 //------------------------------------------------------------------------------

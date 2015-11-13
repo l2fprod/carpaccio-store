@@ -19,6 +19,22 @@ var appEnvOpts = vcapLocal ? {
 } : {}
 var appEnv = cfenv.getAppEnv(appEnvOpts);
 
+// currently send a static list
+app.get("/api/1/products.json", function(req, res) {
+  res.sendFile(__dirname + "/products.json");
+})
+
+// currently send a static list
+var pricers = JSON.parse(require('fs').readFileSync('pricers.json', 'utf8'));
+app.get("/api/1/pricers.json", function(req, res) {
+  res.send(pricers);
+})
+
+//$http.get("/api/1/price.json?pricer=" + engine.id + "&price=" + price + "&quantity=" + quantity + "&state=" + state)
+app.get("/api/1/price.json", function(req, res) {
+  res.sendStatus(501)
+});
+
 // serve the files out of ./public as our main files
 app.use(express.static(__dirname + '/public'));
 

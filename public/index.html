@@ -67,11 +67,15 @@
       {{priceBeforeTaxes()}} euros
     </div>
 
-    <h2>Price to be paid</h2>
-    <div class="alert alert-danger">
+    <h2>Price to be paid</h2>    
+    <div class="alert alert-danger" ng-if="data.pricingEngines.length == 0">
       No pricing engine found - we can't sell :(
     </div>
-
+    <div ng-repeat="engine in data.pricingEngines">
+      {{engine.name}} {{data.cart.prices[engine.id]}}
+    </div>
+    <button class="btn btn-success" ng-click="computePrices()">Compute price</button>
+    
     <button class="btn btn-info">Register a pricing engine</button>
 
   </div>

@@ -20,6 +20,7 @@
   "dependencies": {
     "bower": "^1.6.5",
     "cfenv": "^1.0.3",
-    "express": "^4.13.3"
+    "express": "^4.13.3",
+    "request": "^2.65.0"
   }
 }

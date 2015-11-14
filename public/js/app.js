@@ -69,6 +69,8 @@ appControllers
       }
 
       $scope.computePrices = function () {
+        $scope.data.cart.prices = {}
+        
         $.each($scope.data.pricingEngines, function (_, engine) {
           PricingService.price(engine,
               $scope.data.cart.product.price,

@@ -5,7 +5,7 @@
 <html ng-app="app" lang="en">
 
 <head>
-  <title>Carpaccio Store</title>
+  <title>Elephant Carpaccio - a Nano-incremental development exercise</title>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,69 +16,83 @@
   <link rel="stylesheet" href="css/app.css">
 </head>
 
-<body ng-controller="AppController" ng-cloak>
-  <nav class="navbar">
-    <div class="container">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">Carpaccio Store</a>
+<body ng-controller="AppController" ng-cloak>  
+  <div class="intro">
+    What is this all about? <a href="https://github.com/l2fprod/carpaccio-store">Find out more...</a>
+  </div>
+  
+  <div class="title-container">
+    <span class="title">Elephant Carpaccio</span>
+  </div>
+
+  <div class="cart-container container">
+    <div class="row cart-section products">
+      <div class="col-md-2 cart-section-title">Enjoy our best products</div>
+      <div class="col-md-10">
+        <div class="product well" ng-repeat="product in data.products">
+          <div>
+            <label>
+              {{product.name}}
+              <br/>
+              <img class="product-image" ng-src="{{product.image}}" />
+              <br/>
+              <input type="radio" ng-model="data.cart.product" name="product" ng-value="product">
+            </label>
+          </div>
+          <div>{{product.price}} euros</div>
+        </div>
       </div>
-      <div id="navbar" class="navbar-collapse collapse">
-        <form class="navbar-form navbar-right">
-          <a href="https://bluemix.net/deploy?repository=https://github.com/l2fprod/carpaccio-store" target="_blank"><img src="http://bluemix.net/deploy/button.png" alt="Bluemix button" /></a>
+    </div>
+
+    <div class="row cart-section">
+      <div class="col-md-2 cart-section-title">How many of this juicy breed?</div>
+      <div class="col-md-8">
+        <form>
+          <input class="form-control quantity" type="number" min="1" id="quantity" value="1" ng-model="data.cart.quantity">
         </form>
       </div>
     </div>
-  </nav>
 
-  <div class="container">
-    <h2>Select a product</h2>
-    
-    <div ng-repeat="product in data.products">
-      <div>
-        <label>
-          <input type="radio" ng-model="data.cart.product" name="product" ng-value="product"> {{product.name}}
-        </label>
+    <div class="row cart-section">
+      <div class="col-md-2 cart-section-title">Where should we ship?</div>
+      <div class="col-md-8">
+        <select class="form-control state" ng-model="data.cart.state">
+          <option value="CA">California (CA)</option>
+          <option value="UT">Utah (UT)</option>
+          <option value="TX">Texas (TX)</option>
+        </select>
       </div>
-      <div>{{product.price}} euros</div>
-    </div>
-    
-    <h2>Type a quantity</h2>
-    <div>
-      <input type="integer" id="quantity" value="1" ng-model="data.cart.quantity">
     </div>
 
-    <h2>Billing - Pick a state</h2>
-    <div>
-      <select ng-model="data.cart.state">
-        <option value="CA">California</option>
-        <option value="UT">Utah</option>
-        <option value="TX">Texas</option>
-      </select>
+    <div class="row raw-price-section">
+      <div class="col-md-2 cart-section-title">Price before taxes</div>
+      <div class="col-md-8 raw-price">
+        {{priceBeforeTaxes()}} euros
+      </div>
     </div>
 
-    <h2>Price before taxes</h2>
-    <div>
-      {{priceBeforeTaxes()}} euros
-    </div>
+    <div class="row actual-price-section">
+      <div class="col-md-2 cart-section-title">
+        Price with taxes
+        <button class="btn btn-sm btn-info">Register a pricing engine</button>
+      </div>
+      <div class="col-md-8 raw-price">
+        <div class="alert alert-danger" ng-if="data.pricingEngines.length == 0">
+          No pricing engine found - we can't sell :(
+        </div>
+        <div ng-repeat="engine in data.pricingEngines">
+          {{engine.name}} - {{data.cart.prices[engine.id]}}
+        </div>
+        <button class="btn btn-lg btn-success" ng-click="computePrices()">Compute price</button>
 
-    <h2>Price to be paid</h2>    
-    <div class="alert alert-danger" ng-if="data.pricingEngines.length == 0">
-      No pricing engine found - we can't sell :(
+      </div>
     </div>
-    <div ng-repeat="engine in data.pricingEngines">
-      {{engine.name}} {{data.cart.prices[engine.id]}}
-    </div>
-    <button class="btn btn-success" ng-click="computePrices()">Compute price</button>
-    
-    <button class="btn btn-info">Register a pricing engine</button>
 
   </div>
+
+  <footer>
+    made by <a href="https://github.com/frawa">frank</a> and <a href="https://twitter.com/l2fprod">fred</a>
+  </footer>
 
   <script src="vendor/angular/angular.min.js"></script>
   <script src="vendor/jquery/dist/jquery.min.js"></script>

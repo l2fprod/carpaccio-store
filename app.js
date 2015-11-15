@@ -119,11 +119,14 @@ var monitoring = {
     console.log("Monitor log",total)
   },
   logPrice: function(id,price) {
-    if ( !monitor.prices[id] ) {
-  		monitor.prices[id] = 0;
+    var name = idToPricers[id].name
+    if ( !monitor.prices[name] ) {
+  		monitor.prices[name] = 0;
   	}
-    console.log("Monitor price",id,price)
-    monitor.prices[id] += price
+    console.log("Monitor price",id,name,price)
+    if ( price ) {
+      monitor.prices[name] += price
+    }
   }
 }
 

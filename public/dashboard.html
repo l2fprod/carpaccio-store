@@ -36,8 +36,10 @@
 
     <div class="row cart-section">
       <div class="col-md-2 cart-section-title">Pricings</div>
-      <div class="col-md-8" ng-repeat="(name, value) in data.monitor.prices">
-        {{name}}: <b>{{value}}</b>
+      <div class="col-md-8">
+        <div ng-repeat="(name, value) in data.monitor.prices">
+          {{name}}: <b>{{value}}</b>
+      </div>
       </div>
     </div>
 

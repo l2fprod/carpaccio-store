@@ -165,7 +165,7 @@ describe("Carpaccio Store API", function() {
         var info = JSON.parse(body)
         expect(info.count).to.equal(monitor0.count)
         expect(info.total).to.equal(monitor0.total)
-        expect(info.prices).to.have.property("engine-1")
+        expect(info.prices).to.have.property("Team 1")
         // later
         //expect(info.prices).to.have.property("engine-1",0)
         done()

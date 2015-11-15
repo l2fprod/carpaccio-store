@@ -90,14 +90,23 @@ app.get("/api/1/price.json", function (req, res) {
       json: true
     },
     function (error, response, body) {
+
+      if ( error ) {
+        console.log("[", engine.id, "]","error:", error)
+        monitoring.logPrice(engine.id,0)
+        res.send(error)
+        return
+      }
+
       res.status(response.statusCode)
-      console.log("[", engine.id, "] Got status", response.statusCode, "error:", error, "body:", body)
+      console.log("[", engine.id, "] Got status", response.statusCode, "body:", body)
+
       if (body) {
         monitoring.logPrice(engine.id,Number(body))
         res.send(body)
       } else {
         monitoring.logPrice(engine.id,0)
-        res.send(error)
+        res.send("empty body")
       }
     })
 });

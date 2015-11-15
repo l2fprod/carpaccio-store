@@ -50,7 +50,7 @@ describe("Carpaccio Store API", function() {
     var url = "http://localhost:6001/api/1/registerPricer.json"
 
     var testPricer = {
-      "id:": "testing",
+      "id": "testing",
       "name": "Testing Pricer",
       "url": "http://testing/pricing"
     }

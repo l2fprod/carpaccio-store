@@ -5,6 +5,11 @@ var
   cfenv = require('cfenv'),
   request = require('request')
 
+
+var bodyParser = require('body-parser');
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+
 // load local VCAP configuration
 var vcapLocal = null
 try {
@@ -36,6 +41,24 @@ pricers.forEach(function (pricer) {
  * Returns the list of registered pricers
  */
 app.get("/api/1/pricers.json", function (req, res) {
+  res.send(pricers);
+})
+
+/**
+ * Registers a new pricer.
+ * Returns the list of registered pricers
+ */
+app.post("/api/1/registerPricer.json", function (req, res) {
+  var pricer = req.body
+  console.log("Register pricer",pricer)
+  if ( idToPricers[pricer.id] ) {
+    res.send({
+      error: "engine already exists"
+    }, 400)
+    return
+  }
+  pricers.push(pricer)
+  idToPricers[pricer.id] = pricer
   res.send(pricers);
 })
 

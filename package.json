@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/l2fprod/carpaccio-store#readme",
   "dependencies": {
+    "body-parser": "^1.14.1",
     "bower": "^1.6.5",
     "cfenv": "^1.0.3",
     "chai": "^3.4.1",

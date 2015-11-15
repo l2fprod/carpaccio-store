@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "postinstall": "bower install --allow-root"
+    "postinstall": "bower install --allow-root",
+    "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "repository": {
     "type": "git",
@@ -20,7 +21,9 @@
   "dependencies": {
     "bower": "^1.6.5",
     "cfenv": "^1.0.3",
+    "chai": "^3.4.1",
     "express": "^4.13.3",
+    "mocha": "^2.3.3",
     "request": "^2.65.0"
   }
 }

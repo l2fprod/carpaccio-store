@@ -44,6 +44,22 @@ appServices
       }
     }
   }])
+  .service('MonitorService', ['$http', '$q', function ($http, $q) {
+    return {
+      load: function () {
+        console.info("Loading monitor...");
+        var deferred = $q.defer();
+        $http.get("/api/1/monitor.json")
+          .success(function (data) {
+            deferred.resolve(data);
+          })
+          .error(function () {
+            deferred.reject();
+          });
+        return deferred.promise;
+      }
+    }
+  }])
 
 var appControllers = angular.module('appControllers', []);
 appControllers
@@ -70,7 +86,7 @@ appControllers
 
       $scope.computePrices = function () {
         $scope.data.cart.prices = {}
-        
+
         $.each($scope.data.pricingEngines, function (_, engine) {
           PricingService.price(engine,
               $scope.data.cart.product.price,
@@ -96,6 +112,17 @@ appControllers
         $scope.data.pricingEngines = engines;
       });
 
+  }])
+
+  .controller('DashboardController', ['$scope', 'MonitorService',
+  function ($scope, MonitorService) {
+    $scope.data = {
+        monitor: {}
+    }
+    MonitorService.load().then(function (monitor) {
+      console.log("Found monitor", monitor);
+      $scope.data.monitor = monitor;
+    });
   }])
 
 

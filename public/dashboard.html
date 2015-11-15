@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<!--
+// Licensed under the Apache License. See footer for details.
+-->
+<html ng-app="app" lang="en">
+
+<head>
+  <title>Elephant Carpaccio - a Nano-incremental development exercise</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google" content="notranslate" />
+
+  <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="vendor/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+
+
+<body ng-controller="DashboardController" ng-cloak>
+  <div class="intro">
+    What is this all about? <a href="https://github.com/l2fprod/carpaccio-store">Find out more...</a>
+  </div>
+
+  <div class="title-container">
+    <span class="title">Elephant Carpaccio - Dashboard</span>
+  </div>
+
+  <div class="cart-container container">
+    <div class="row cart-section">
+      <div class="col-md-2 cart-section-title">Store Activity</div>
+      <div class="col-md-8">
+        {{data.monitor.count}} transactions for a total of <b>{{data.monitor.total}}</b>
+      </div>
+    </div>
+
+    <div class="row cart-section">
+      <div class="col-md-2 cart-section-title">Pricings</div>
+      <div class="col-md-8" ng-repeat="(name, value) in data.monitor.prices">
+        {{name}}: <b>{{value}}</b>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    made by <a href="https://github.com/frawa">frank</a> and <a href="https://twitter.com/l2fprod">fred</a>
+  </footer>
+
+  <script src="vendor/angular/angular.min.js"></script>
+  <script src="vendor/jquery/dist/jquery.min.js"></script>
+  <script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+<!--
+//------------------------------------------------------------------------------
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//------------------------------------------------------------------------------
+-->

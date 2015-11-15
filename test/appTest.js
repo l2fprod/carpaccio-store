@@ -55,6 +55,7 @@ describe("Carpaccio Store API", function() {
       "url": "http://testing/pricing"
     }
 
+    // TODO allow to pass without restarting server
     it("returns new pricer", function(done) {
       request.post({
           url: url,
@@ -115,6 +116,61 @@ describe("Carpaccio Store API", function() {
       })
     })
 */
+
+  })
+
+  describe("Monitor", function() {
+
+    var getMonitorUrl = function(pricer,price,quantity,state) {
+      return "http://localhost:6001/api/1/monitor.json"
+    }
+
+    var getPriceUrl = function(pricer,price,quantity,state) {
+      return "http://localhost:6001/api/1/price.json"
+        +"?pricer="+pricer
+        +"&price="+price
+        +"&quantity="+quantity
+        +"&state="+state
+    }
+
+    var monitor0
+
+    it("returns status 200", function(done) {
+      var url = getMonitorUrl()
+      request(url, function(error, response, body) {
+        expect(response.statusCode).to.equal(200)
+        var info = JSON.parse(body)
+        expect(info).to.have.property("count")
+        expect(info).to.have.property("total")
+        expect(info).to.have.property("prices")
+
+        monitor0 = info
+        done()
+      })
+    })
+
+    it("calculates a price", function(done) {
+      var urlPrice = getPriceUrl("engine-1",13,13,"")
+      request(urlPrice, function(error, response, body) {
+        // CURRENTLY
+        expect(response.statusCode).to.equal(501)
+        done()
+      })
+    })
+
+    it("has logged pricing", function(done) {
+      var url = getMonitorUrl()
+      request(url, function(error, response, body) {
+        expect(response.statusCode).to.equal(200)
+        var info = JSON.parse(body)
+        expect(info.count).to.equal(monitor0.count)
+        expect(info.total).to.equal(monitor0.total)
+        expect(info.prices).to.have.property("engine-1")
+        // later
+        //expect(info.prices).to.have.property("engine-1",0)
+        done()
+      })
+    })
 
   })
 

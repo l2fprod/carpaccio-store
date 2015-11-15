@@ -93,12 +93,39 @@ app.get("/api/1/price.json", function (req, res) {
       res.status(response.statusCode)
       console.log("[", engine.id, "] Got status", response.statusCode, "error:", error, "body:", body)
       if (body) {
+        monitoring.logPrice(engine.id,Number(body))
         res.send(body)
       } else {
+        monitoring.logPrice(engine.id,0)
         res.send(error)
       }
     })
 });
+
+var monitor = {
+	count: 0,
+	total: 0,
+	prices: {}
+}
+//$http.get("/api/1/monitor.json
+app.get("/api/1/monitor.json", function(req, res) {
+  res.send(monitor)
+});
+
+var monitoring = {
+  log: function(total) {
+    monitor.count++
+    monitor.total += total
+    console.log("Monitor log",total)
+  },
+  logPrice: function(id,price) {
+    if ( !monitor.prices[id] ) {
+  		monitor.prices[id] = 0;
+  	}
+    console.log("Monitor price",id,price)
+    monitor.prices[id] += price
+  }
+}
 
 // serve the files out of ./public as our main files
 app.use(express.static(__dirname + '/public'));

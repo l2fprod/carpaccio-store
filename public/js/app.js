@@ -57,14 +57,28 @@ appServices
             deferred.reject();
           });
         return deferred.promise;
+      },
+      log: function (cart) {
+        // TODO post complete cart
+        var value = cart.product.price*cart.quantity
+        var deferred = $q.defer();
+        console.log("FW",cart,value)
+        $http.get("/api/1/logTransaction.json?value="+value)
+          .success(function (data) {
+            deferred.resolve(data);
+          })
+          .error(function () {
+            deferred.reject();
+          });
+        return deferred.promise;
       }
     }
   }])
 
 var appControllers = angular.module('appControllers', []);
 appControllers
-  .controller('AppController', ['$scope', 'ProductService', 'PricingService',
-  function ($scope, ProductService, PricingService) {
+  .controller('AppController', ['$scope', 'ProductService', 'PricingService', 'MonitorService',
+  function ($scope, ProductService, PricingService, MonitorService) {
       $scope.data = {
         products: [],
         pricingEngines: [],
@@ -86,6 +100,13 @@ appControllers
 
       $scope.computePrices = function () {
         $scope.data.cart.prices = {}
+
+        MonitorService.log($scope.data.cart)
+        .then(function(result) {
+          console.log("Monitor:", result)
+        }, function (error) {
+          console.error(error);
+        })
 
         $.each($scope.data.pricingEngines, function (_, engine) {
           PricingService.price(engine,

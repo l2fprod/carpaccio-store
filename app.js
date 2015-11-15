@@ -104,7 +104,7 @@ app.get("/api/1/price.json", function (req, res) {
 
 var monitor = {
 	count: 0,
-	total: 0,
+	value: 0,
 	prices: {}
 }
 //$http.get("/api/1/monitor.json
@@ -113,10 +113,10 @@ app.get("/api/1/monitor.json", function(req, res) {
 });
 
 var monitoring = {
-  log: function(total) {
+  log: function(value) {
     monitor.count++
-    monitor.total += total
-    console.log("Monitor log",total)
+    monitor.value += Number(value)
+    console.log("Monitor log",value)
   },
   logPrice: function(id,price) {
     var name = idToPricers[id].name
@@ -129,6 +129,16 @@ var monitoring = {
     }
   }
 }
+
+// TODO post complete cart
+/**
+ * Log a pricing transaction
+ * /api/1/logTransaction.json?value=<PRICE BEFOER TAXES>
+ */
+app.get("/api/1/logTransaction.json", function(req, res) {
+  monitoring.log(req.query.value)
+  res.send(monitor)
+});
 
 // serve the files out of ./public as our main files
 app.use(express.static(__dirname + '/public'));

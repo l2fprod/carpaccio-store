@@ -133,6 +133,10 @@ describe("Carpaccio Store API", function() {
         +"&state="+state
     }
 
+    var getLogUrl = function(pricer,price,quantity,state) {
+      return "http://localhost:6001/api/1/logTransaction.json?value=13"
+    }
+
     var monitor0
 
     it("returns status 200", function(done) {
@@ -141,7 +145,7 @@ describe("Carpaccio Store API", function() {
         expect(response.statusCode).to.equal(200)
         var info = JSON.parse(body)
         expect(info).to.have.property("count")
-        expect(info).to.have.property("total")
+        expect(info).to.have.property("value")
         expect(info).to.have.property("prices")
 
         monitor0 = info
@@ -164,14 +168,22 @@ describe("Carpaccio Store API", function() {
         expect(response.statusCode).to.equal(200)
         var info = JSON.parse(body)
         expect(info.count).to.equal(monitor0.count)
-        expect(info.total).to.equal(monitor0.total)
-        expect(info.prices).to.have.property("Team 1")
-        // later
-        //expect(info.prices).to.have.property("engine-1",0)
+        expect(info.value).to.equal(monitor0.value)
+        expect(info.prices).to.have.property("Team 1",0)
         done()
       })
     })
 
+    it("has logged transaction", function(done) {
+      var url = getLogUrl()
+      request(url, function(error, response, body) {
+        expect(response.statusCode).to.equal(200)
+        var info = JSON.parse(body)
+        expect(info.count).to.equal(monitor0.count+1)
+        expect(info.value).to.equal(monitor0.value+13)
+        done()
+      })
+    })
   })
 
 })

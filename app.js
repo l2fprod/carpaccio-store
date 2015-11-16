@@ -3,7 +3,8 @@ var
   express = require('express'),
   app = express(),
   cfenv = require('cfenv'),
-  request = require('request')
+  request = require('request'),
+  async = require('async')
 
 
 var bodyParser = require('body-parser');
@@ -73,6 +74,10 @@ app.get("/api/1/price.json", function (req, res) {
   var state = req.query.state
   console.log("Received pricing request", req.query);
 
+  getPrice(pricerId,price,quantity,state, res)
+});
+
+var getPrice = function(pricerId,price,quantity,state, res) {
   // find the engine
   var engine = idToPricers[pricerId]
   if (!engine) {
@@ -109,7 +114,8 @@ app.get("/api/1/price.json", function (req, res) {
         res.send("empty body")
       }
     })
-});
+
+}
 
 var monitor = {
   current: {
@@ -171,6 +177,53 @@ app.get("/api/1/logHistory.json", function(req, res) {
   monitoring.history(req.query.title)
   res.send(monitor)
 });
+
+/**
+ * Simulate a given scenario.
+ * Returns the list of scenarios
+ * /api/1/scenario.json?id=<ID>&title=<TITLE>
+ */
+app.get("/api/1/scenario.json", function (req, res) {
+  var scenarios = JSON.parse(require('fs').readFileSync('scenarios.json', 'utf8'))
+  if ( req.query.id ) {
+    scenarios.forEach(function (scenario) {
+      if ( scenario.id==req.query.id ) {
+        simulate(req.query.title,scenario)
+      }
+    })
+  }
+	res.send(scenarios);
+})
+
+var simulate = function(title,scenario) {
+  console.log("Simulating scenario:",title,scenario)
+
+  scenario.prices.forEach(function(price) {
+    scenario.quantities.forEach(function(quantity) {
+      scenario.states.forEach(function(state) {
+        getAllPrices(price,quantity,state)
+      })
+    })
+  })
+
+  var historyTitle = (title?title+": ":"")+scenario.name
+  monitoring.history(historyTitle)
+  console.log("FW",monitor)
+}
+
+var getAllPrices = function(price,quantity,state) {
+  console.log("Get all prices",price,quantity,state);
+  monitoring.log(price*quantity)
+
+  var myres = {
+    send: function() {},
+    status: function() {}
+  }
+  async.each(pricers, function(pricer, done) {
+    getPrice(pricer.id,price,quantity,state,myres)
+    done(null)
+  })
+}
 
 // serve the files out of ./public as our main files
 app.use(express.static(__dirname + '/public'));

@@ -121,7 +121,7 @@ describe("Carpaccio Store API", function() {
 
   describe("Monitor", function() {
 
-    var getMonitorUrl = function(pricer,price,quantity,state) {
+    var getMonitorUrl = function() {
       return "http://localhost:6001/api/1/monitor.json"
     }
 
@@ -200,10 +200,77 @@ describe("Carpaccio Store API", function() {
         expect(info.current.count).to.equal(0)
         expect(info.current.value).to.equal(0)
         expect(info.history).to.have.length(monitor0.history.length+1)
-        expect(info.history[0]).to.have.property("title","Test History")
+        expect(info.history[info.history.length-1]).to.have.property("title","Test History")
         done()
       })
     })
   })
+
+  describe("Scenario", function() {
+
+    var getMonitorUrl = function() {
+      return "http://localhost:6001/api/1/monitor.json"
+    }
+
+    var getScenarioUrl = function(id,title) {
+      return "http://localhost:6001/api/1/scenario.json"
+        + (id?"?id="+id+"&title="+title:"")
+    }
+
+    var monitor0
+
+    it("snapshot monitor", function(done) {
+      var url = getMonitorUrl()
+      request(url, function(error, response, body) {
+        expect(response.statusCode).to.equal(200)
+        var info = JSON.parse(body)
+        monitor0 = info
+        done()
+      })
+    })
+
+    it("shows available scenarios", function(done) {
+      var url = getScenarioUrl()
+      request(url, function(error, response, body) {
+        expect(response.statusCode).to.equal(200)
+        var info = JSON.parse(body)
+        expect(info).to.have.length.above(3)
+        done()
+      })
+    })
+
+    it("unchanged monitor", function(done) {
+      var url = getMonitorUrl()
+      request(url, function(error, response, body) {
+        expect(response.statusCode).to.equal(200)
+        var info = JSON.parse(body)
+        expect(info).to.eql(monitor0)
+        done()
+      })
+    })
+
+    it("execute a scenario", function(done) {
+      var url = getScenarioUrl(1,"Test Scenario")
+      request(url, function(error, response, body) {
+        expect(response.statusCode).to.equal(200)
+        done()
+      })
+    })
+
+    it("changed monitor", function(done) {
+      var url = getMonitorUrl()
+      request(url, function(error, response, body) {
+        expect(response.statusCode).to.equal(200)
+        var info = JSON.parse(body)
+        // TODO some testing
+        expect(info.history).to.have.length(monitor0.history.length+1)
+        expect(info.history[info.history.length-1]).to.have.property("title","Test Scenario: First")
+        expect(info.history[info.history.length-1]).to.have.property("value",1313*13)
+        done()
+      })
+    })
+
+  })
+
 
 })

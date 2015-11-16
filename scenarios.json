@@ -1,0 +1,53 @@
+[
+  {
+    "id": 1,
+    "name": "First",
+    "description": "The very first transactions, out of Utah.",
+    "prices": [ 1313 ],
+    "quantities": [ 13 ],
+    "states": [ "UT" ]
+  },
+  {
+    "id": 2,
+    "name": "Two States",
+    "description": "We are deploying to Texas.",
+    "prices": [ 1002 ],
+    "quantities": [ 1, 5 ],
+    "states": [ "UT", "TX" ]
+  },
+  {
+    "id": 3,
+    "name": "First discount, two states",
+    "description": "We need to retain big budget buyers: 50000/15%",
+    "prices": [ 1022 ],
+    "quantities": [ 10, 50 ],
+    "states": [ "UT", "TX" ]
+  },
+  {
+    "id": 4,
+    "name": "Five States",
+    "description": "The very first transactions, out of UT",
+    "prices": [ 1005 ],
+    "quantities": [ 1, 5 ],
+    "states": [ "UT", "NV", "TX", "AL", "CA" ]
+  },
+  {
+    "id": 5,
+    "name": "All States, all discounts",
+    "description": "All",
+    "prices": [ 555, 1055 ],
+    "quantities": [ 1, 10, 20, 50 ],
+    "states": [ "UT", "NV", "TX", "AL", "CA" ]
+  },
+
+  {
+    "id": 99,
+    "name": "ALL",
+    "description": "Reminder ...",
+    "prices": [ 1000, 5000, 7000, 10000, 50000 ],
+    "_discounts": [ 3, 5, 7, 10, 15 ],
+    "quantities": [ 1, 2, 5 ],
+    "states": [ "UT", "NV", "TX", "AL", "CA" ]
+  }
+
+]

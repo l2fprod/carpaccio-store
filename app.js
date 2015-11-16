@@ -112,9 +112,12 @@ app.get("/api/1/price.json", function (req, res) {
 });
 
 var monitor = {
-	count: 0,
-	value: 0,
-	prices: {}
+  current: {
+	  count: 0,
+	  value: 0,
+	  prices: {}
+  },
+  history: []
 }
 //$http.get("/api/1/monitor.json
 app.get("/api/1/monitor.json", function(req, res) {
@@ -123,19 +126,30 @@ app.get("/api/1/monitor.json", function(req, res) {
 
 var monitoring = {
   log: function(value) {
-    monitor.count++
-    monitor.value += Number(value)
-    console.log("Monitor log",value)
+    monitor.current.count++
+    monitor.current.value += Number(value)
+    console.log("Monitor log",value,monitor)
   },
   logPrice: function(id,price) {
     var name = idToPricers[id].name
-    if ( !monitor.prices[name] ) {
-  		monitor.prices[name] = 0;
+    var current = monitor.current
+    if ( !current.prices[name] ) {
+  		current.prices[name] = 0;
   	}
     console.log("Monitor price",id,name,price)
     if ( price ) {
-      monitor.prices[name] += price
+      current.prices[name] += price
     }
+  },
+  history: function(title) {
+    monitor.current.title = title
+    monitor.history.push(monitor.current)
+    monitor.current = {
+      count: 0,
+      value: 0,
+      prices: {}
+    }
+    console.log("Monitor history",title,monitor)
   }
 }
 
@@ -146,6 +160,15 @@ var monitoring = {
  */
 app.get("/api/1/logTransaction.json", function(req, res) {
   monitoring.log(req.query.value)
+  res.send(monitor)
+});
+
+/**
+ * Push current log to history
+ * /api/1/logHistory.json?title=<HISTORY TITLE>
+ */
+app.get("/api/1/logHistory.json", function(req, res) {
+  monitoring.history(req.query.title)
   res.send(monitor)
 });
 

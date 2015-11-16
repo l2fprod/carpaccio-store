@@ -133,8 +133,12 @@ describe("Carpaccio Store API", function() {
         +"&state="+state
     }
 
-    var getLogUrl = function(pricer,price,quantity,state) {
-      return "http://localhost:6001/api/1/logTransaction.json?value=13"
+    var getLogUrl = function(value) {
+      return "http://localhost:6001/api/1/logTransaction.json?value="+value
+    }
+
+    var getHistoryUrl = function(title) {
+      return "http://localhost:6001/api/1/logHistory.json?title="+title
     }
 
     var monitor0
@@ -144,9 +148,11 @@ describe("Carpaccio Store API", function() {
       request(url, function(error, response, body) {
         expect(response.statusCode).to.equal(200)
         var info = JSON.parse(body)
-        expect(info).to.have.property("count")
-        expect(info).to.have.property("value")
-        expect(info).to.have.property("prices")
+        expect(info).to.have.property("current")
+        expect(info).to.have.property("history")
+        expect(info.current).to.have.property("count")
+        expect(info.current).to.have.property("value")
+        expect(info.current).to.have.property("prices")
 
         monitor0 = info
         done()
@@ -167,20 +173,34 @@ describe("Carpaccio Store API", function() {
       request(url, function(error, response, body) {
         expect(response.statusCode).to.equal(200)
         var info = JSON.parse(body)
-        expect(info.count).to.equal(monitor0.count)
-        expect(info.value).to.equal(monitor0.value)
-        expect(info.prices).to.have.property("Team 1",0)
+        expect(info.current.count).to.equal(monitor0.current.count)
+        expect(info.current.value).to.equal(monitor0.current.value)
+        expect(info.current.prices).to.have.property("Team 1",0)
         done()
       })
     })
 
     it("has logged transaction", function(done) {
-      var url = getLogUrl()
+      var url = getLogUrl(13)
       request(url, function(error, response, body) {
         expect(response.statusCode).to.equal(200)
         var info = JSON.parse(body)
-        expect(info.count).to.equal(monitor0.count+1)
-        expect(info.value).to.equal(monitor0.value+13)
+        var current = info.current
+        expect(current.count).to.equal(monitor0.current.count+1)
+        expect(current.value).to.equal(monitor0.current.value+13)
+        done()
+      })
+    })
+
+    it("has pushes history", function(done) {
+      var url = getHistoryUrl("Test History")
+      request(url, function(error, response, body) {
+        expect(response.statusCode).to.equal(200)
+        var info = JSON.parse(body)
+        expect(info.current.count).to.equal(0)
+        expect(info.current.value).to.equal(0)
+        expect(info.history).to.have.length(1)
+        expect(info.history[0]).to.have.property("title","Test History")
         done()
       })
     })

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node app.js",
     "postinstall": "bower install --allow-root",
-    "test": "./node_modules/.bin/mocha --reporter spec"
+    "test": "./node_modules/.bin/mocha --reporter spec",
+    "simulate": "node ./test/simulate.js"
   },
   "repository": {
     "type": "git",

@@ -199,7 +199,7 @@ describe("Carpaccio Store API", function() {
         var info = JSON.parse(body)
         expect(info.current.count).to.equal(0)
         expect(info.current.value).to.equal(0)
-        expect(info.history).to.have.length(1)
+        expect(info.history).to.have.length(monitor0.history.length+1)
         expect(info.history[0]).to.have.property("title","Test History")
         done()
       })

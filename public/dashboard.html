@@ -30,7 +30,7 @@
     <div class="row cart-section">
       <div class="col-md-2 cart-section-title">Store Activity</div>
       <div class="col-md-8">
-        {{data.monitor.current.count}} transactions for a total value of <b>{{data.monitor.current.value}}</b>
+        {{data.monitor.current.count}} transactions for a total value of <b>{{data.monitor.current.value.toFixed(2)}}</b>
       </div>
     </div>
 
@@ -38,18 +38,18 @@
       <div class="col-md-2 cart-section-title">Pricings</div>
       <div class="col-md-8">
         <div ng-repeat="(name, value) in data.monitor.current.prices">
-          {{name}}: <b>{{value}}</b>
+          {{name}}: <b>{{value.toFixed(2)}}</b>
         </div>
       </div>
     </div>
 
-    <div ng-repeat="history in data.monitor.history">
+    <div ng-repeat="history in data.monitor.history.reverse()">
       <div class="row cart-section">
         <div class="col-md-2 cart-section-title">{{history.title}}</div>
         <div class="col-md-8">
-          {{history.count}} transactions for a total value of <b>{{history.value}}</b>
+          {{history.count}} transactions for a total value of <b>{{history.value.toFixed(2)}}</b>, CFO approved <b>{{history.approvedValue.toFixed(2)}}</b>
           <div ng-repeat="(name, value) in history.prices">
-            {{name}}: <b>{{value}}</b>
+            {{name}}: <b>{{value.toFixed(2)}}</b>
           </div>
         </div>
       </div>

@@ -282,6 +282,7 @@ describe("Carpaccio Store API", function() {
           expect(info.history).to.have.length(monitor0.history.length+1)
           expect(info.history[info.history.length-1]).to.have.property("title","Test Scenario: First")
           expect(info.history[info.history.length-1]).to.have.property("value",1313*13)
+          expect(info.history[info.history.length-1]).to.have.property("approvedValue",1313*13*1.03)
         })
         .expect(200,done)
     })

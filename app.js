@@ -131,9 +131,12 @@ app.get("/api/1/monitor.json", function(req, res) {
 });
 
 var monitoring = {
-  log: function(value) {
+  log: function(value,approvedValue) {
     monitor.current.count++
     monitor.current.value += Number(value)
+    if ( approvedValue ) {
+      monitor.current.approvedValue += Number(approvedValue)
+    }
     console.log("Monitor log",value,monitor)
   },
   logPrice: function(id,price) {
@@ -153,6 +156,7 @@ var monitoring = {
     monitor.current = {
       count: 0,
       value: 0,
+      approvedValue: 0,
       prices: {}
     }
     console.log("Monitor history",title,monitor)
@@ -201,6 +205,7 @@ var simulate = function(title,scenario) {
   scenario.prices.forEach(function(price) {
     scenario.quantities.forEach(function(quantity) {
       scenario.states.forEach(function(state) {
+        logApprovedValue(scenario,price,quantity,state)
         getAllPrices(price,quantity,state)
       })
     })
@@ -210,9 +215,38 @@ var simulate = function(title,scenario) {
   monitoring.history(historyTitle)
 }
 
+var logApprovedValue = function(scenario,price,quantity,state) {
+  var value = price*quantity
+  var approvedValue = value
+
+  if ( scenario.discounts ) {
+    var discount
+    for (var cap in scenario.discounts) {
+      if ( value>=Number(cap) ) {
+        discount = scenario.discounts[cap]
+      }
+    }
+    if ( !discount ) {
+      // TODO throw?
+      console.log("INTERNAL ERROR: no discount",value,scenario.discounts)
+    }
+    approvedValue -= ( approvedValue * discount ) / 100.0
+  }
+
+  if ( scenario.taxes ) {
+    var tax = scenario.taxes[state]
+    if ( !tax ) {
+      // TODO throw?
+      console.log("INTERNAL ERROR: no tax",state,scenario.taxes)
+    }
+    approvedValue += ( approvedValue * tax ) / 100.0
+  }
+
+  monitoring.log(value,approvedValue)
+}
+
 var getAllPrices = function(price,quantity,state) {
   console.log("Get all prices",price,quantity,state);
-  monitoring.log(price*quantity)
 
   var myres = {
     send: function() {},

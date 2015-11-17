@@ -53,9 +53,9 @@ app.post("/api/1/registerPricer.json", function (req, res) {
   var pricer = req.body
   console.log("Register pricer",pricer)
   if ( idToPricers[pricer.id] ) {
-    res.send({
+    res.status(400).send({
       error: "engine already exists"
-    }, 400)
+    })
     return
   }
   pricers.push(pricer)
@@ -81,9 +81,9 @@ var getPrice = function(pricerId,price,quantity,state, res) {
   // find the engine
   var engine = idToPricers[pricerId]
   if (!engine) {
-    res.send({
+    res.status(404).send({
       error: "No such engine"
-    }, 404)
+    })
     return
   }
 
@@ -208,7 +208,6 @@ var simulate = function(title,scenario) {
 
   var historyTitle = (title?title+": ":"")+scenario.name
   monitoring.history(historyTitle)
-  console.log("FW",monitor)
 }
 
 var getAllPrices = function(price,quantity,state) {
@@ -233,6 +232,8 @@ app.listen(appEnv.port, "0.0.0.0", function () {
   // print a message when the server starts listening
   console.log("server starting on " + appEnv.url);
 });
+
+module.exports = app
 
 //------------------------------------------------------------------------------
 // Licensed under the Apache License, Version 2.0 (the "License");

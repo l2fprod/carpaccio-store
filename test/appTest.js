@@ -1,53 +1,70 @@
 var expect  = require("chai").expect;
-var request = require("request");
+var request = require("supertest");
 
 describe("Carpaccio Store API", function() {
 
-  describe("Productes", function() {
-    var url = "http://localhost:6001/api/1/products.json"
+  var server;
+  before(function () {
+    server = require('../app.js');
+  })
+
+  after(function () {
+    //server.close();
+  })
+
+  it('responds to /', function(done) {
+    request(server)
+      .get('/')
+      .expect(200, done);
+  })
+
+  describe("Products", function() {
+    var path = "/api/1/products.json"
 
     it("returns status 200", function(done) {
-      request(url, function(error, response, body) {
-        expect(response.statusCode).to.equal(200)
-        done()
-      })
+      request(server)
+        .get(path)
+        .expect(200,done)
     })
 
     it("returns products", function(done) {
-        request(url, function(error, response, body) {
-          var info = JSON.parse(body)
+      request(server)
+        .get(path)
+        .expect(function(res) {
+          var info = res.body
           expect(info.length).to.be.above(3)
           expect(info[0]).to.have.property("price")
-          done()
         })
+        .expect(200,done)
     })
 
   })
 
   describe("Pricers", function() {
-    var url = "http://localhost:6001/api/1/pricers.json"
+    var path = "/api/1/pricers.json"
 
     it("returns status 200", function(done) {
-      request(url, function(error, response, body) {
-        expect(response.statusCode).to.equal(200)
-        done()
-      })
+      request(server)
+        .get(path)
+        .expect(200,done)
     })
 
     it("returns pricers", function(done) {
-        request(url, function(error, response, body) {
-          var info = JSON.parse(body)
+      request(server)
+        .get(path)
+        .expect(function(res) {
+          var info = res.body
           expect(info.length).to.be.above(2)
           expect(info[0]).to.have.property("id")
           expect(info[0]).to.have.property("name")
-          done()
         })
+        .expect(200,done)
     })
 
   });
 
   describe("RegisterPricer", function() {
-    var url = "http://localhost:6001/api/1/registerPricer.json"
+    var path = "/api/1/registerPricer.json"
 
     var testPricer = {
       "id": "testing",
@@ -57,34 +74,28 @@ describe("Carpaccio Store API", function() {
 
     // TODO allow to pass without restarting server
     it("returns new pricer", function(done) {
-      request.post({
-          url: url,
-          json: true,
-          body: testPricer
-        }, function(error, response, body) {
-        expect(response.statusCode).to.equal(200)
-        expect(body).to.include(testPricer)
-        done()
-      })
+      request(server)
+        .post(path)
+        .send(testPricer)
+        .expect(function(res) {
+          expect(res.body).to.include(testPricer)
+        })
+        .expect(200,done)
     })
 
     it("returns error on duplicate pricer", function(done) {
-      request.post({
-          url: url,
-          json: true,
-          body: testPricer
-        }, function(error, response, body) {
-        expect(response.statusCode).to.equal(400)
-        done()
-      })
+      request(server)
+        .post(path)
+        .send(testPricer)
+        .expect(400,done)
     })
 
-  });
+  })
 
   describe("Price", function() {
 
-    var getUrl = function(pricer,price,quantity,state) {
-      return "http://localhost:6001/api/1/price.json"
+    var getPath = function(pricer,price,quantity,state) {
+      return "/api/1/price.json"
         +"?pricer="+pricer
         +"&price="+price
         +"&quantity="+quantity
@@ -92,19 +103,17 @@ describe("Carpaccio Store API", function() {
     }
 
     it("returns status 404 on missing engine", function(done) {
-      var url = getUrl("NO-engine",0,0,"")
-      request(url, function(error, response, body) {
-        expect(response.statusCode).to.equal(404)
-        done()
-      })
+      var path = getPath("NO-engine",0,0,"")
+      request(server)
+        .get(path)
+        .expect(404,done)
     })
 
     it("CURRENTLY returns status 501", function(done) {
-      var url = getUrl("engine-1",1,1,"")
-      request(url, function(error, response, body) {
-        expect(response.statusCode).to.equal(501)
-        done()
-      })
+      var path = getPath("engine-1",1,1,"")
+      request(server)
+        .get(path)
+        .expect(501,done)
     })
 
 /*
@@ -121,156 +130,159 @@ describe("Carpaccio Store API", function() {
 
   describe("Monitor", function() {
 
-    var getMonitorUrl = function() {
-      return "http://localhost:6001/api/1/monitor.json"
+    var getMonitorPath = function() {
+      return "/api/1/monitor.json"
     }
 
-    var getPriceUrl = function(pricer,price,quantity,state) {
-      return "http://localhost:6001/api/1/price.json"
+    var getPricePath = function(pricer,price,quantity,state) {
+      return "/api/1/price.json"
         +"?pricer="+pricer
         +"&price="+price
         +"&quantity="+quantity
         +"&state="+state
     }
 
-    var getLogUrl = function(value) {
-      return "http://localhost:6001/api/1/logTransaction.json?value="+value
+    var getLogPath = function(value) {
+      return "/api/1/logTransaction.json?value="+value
     }
 
-    var getHistoryUrl = function(title) {
-      return "http://localhost:6001/api/1/logHistory.json?title="+title
+    var getHistoryPath = function(title) {
+      return "/api/1/logHistory.json?title="+title
     }
 
     var monitor0
 
     it("returns status 200", function(done) {
-      var url = getMonitorUrl()
-      request(url, function(error, response, body) {
-        expect(response.statusCode).to.equal(200)
-        var info = JSON.parse(body)
-        expect(info).to.have.property("current")
-        expect(info).to.have.property("history")
-        expect(info.current).to.have.property("count")
-        expect(info.current).to.have.property("value")
-        expect(info.current).to.have.property("prices")
+      var path = getMonitorPath()
+      request(server)
+        .get(path)
+        .expect(function(res) {
+          var info = res.body
+          expect(info).to.have.property("current")
+          expect(info).to.have.property("history")
+          expect(info.current).to.have.property("count")
+          expect(info.current).to.have.property("value")
+          expect(info.current).to.have.property("prices")
 
-        monitor0 = info
-        done()
-      })
+          monitor0 = info
+        })
+        .expect(200,done)
     })
 
     it("calculates a price", function(done) {
-      var urlPrice = getPriceUrl("engine-1",13,13,"")
-      request(urlPrice, function(error, response, body) {
-        // CURRENTLY
-        expect(response.statusCode).to.equal(501)
-        done()
-      })
+      var path = getPricePath("engine-1",13,13,"")
+      request(server)
+        .get(path)
+        .expect(501,done)
     })
 
     it("has logged pricing", function(done) {
-      var url = getMonitorUrl()
-      request(url, function(error, response, body) {
-        expect(response.statusCode).to.equal(200)
-        var info = JSON.parse(body)
-        expect(info.current.count).to.equal(monitor0.current.count)
-        expect(info.current.value).to.equal(monitor0.current.value)
-        expect(info.current.prices).to.have.property("Team 1",0)
-        done()
-      })
+      var path = getMonitorPath()
+      request(server)
+        .get(path)
+        .expect(function(res) {
+          var info = res.body
+          expect(info.current.count).to.equal(monitor0.current.count)
+          expect(info.current.value).to.equal(monitor0.current.value)
+          expect(info.current.prices).to.have.property("Team 1",0)
+        })
+        .expect(200,done)
     })
 
     it("has logged transaction", function(done) {
-      var url = getLogUrl(13)
-      request(url, function(error, response, body) {
-        expect(response.statusCode).to.equal(200)
-        var info = JSON.parse(body)
-        var current = info.current
-        expect(current.count).to.equal(monitor0.current.count+1)
-        expect(current.value).to.equal(monitor0.current.value+13)
-        done()
-      })
+      var path = getLogPath(13)
+      request(server)
+        .get(path)
+        .expect(function(res) {
+          var info = res.body
+          var current = info.current
+          expect(current.count).to.equal(monitor0.current.count+1)
+          expect(current.value).to.equal(monitor0.current.value+13)
+        })
+        .expect(200,done)
     })
 
     it("has pushes history", function(done) {
-      var url = getHistoryUrl("Test History")
-      request(url, function(error, response, body) {
-        expect(response.statusCode).to.equal(200)
-        var info = JSON.parse(body)
-        expect(info.current.count).to.equal(0)
-        expect(info.current.value).to.equal(0)
-        expect(info.history).to.have.length(monitor0.history.length+1)
-        expect(info.history[info.history.length-1]).to.have.property("title","Test History")
-        done()
-      })
+      var path = getHistoryPath("Test History")
+      request(server)
+        .get(path)
+        .expect(function(res) {
+          var info = res.body
+          expect(info.current.count).to.equal(0)
+          expect(info.current.value).to.equal(0)
+          expect(info.history).to.have.length(monitor0.history.length+1)
+          expect(info.history[info.history.length-1]).to.have.property("title","Test History")
+        })
+        .expect(200,done)
     })
+
   })
 
   describe("Scenario", function() {
 
-    var getMonitorUrl = function() {
-      return "http://localhost:6001/api/1/monitor.json"
+    var getMonitorPath = function() {
+      return "/api/1/monitor.json"
     }
 
-    var getScenarioUrl = function(id,title) {
-      return "http://localhost:6001/api/1/scenario.json"
+    var getScenarioPath = function(id,title) {
+      return "/api/1/scenario.json"
         + (id?"?id="+id+"&title="+title:"")
     }
 
     var monitor0
 
     it("snapshot monitor", function(done) {
-      var url = getMonitorUrl()
-      request(url, function(error, response, body) {
-        expect(response.statusCode).to.equal(200)
-        var info = JSON.parse(body)
-        monitor0 = info
-        done()
-      })
+      var path = getMonitorPath()
+      request(server)
+        .get(path)
+        .expect(function(res) {
+          monitor0 = res.body
+        })
+        .expect(200,done)
     })
 
     it("shows available scenarios", function(done) {
-      var url = getScenarioUrl()
-      request(url, function(error, response, body) {
-        expect(response.statusCode).to.equal(200)
-        var info = JSON.parse(body)
-        expect(info).to.have.length.above(3)
-        done()
-      })
+      var path = getScenarioPath()
+      request(server)
+        .get(path)
+        .expect(function(res) {
+          var info = res.body
+          expect(info).to.have.length.above(3)
+        })
+        .expect(200,done)
     })
 
     it("unchanged monitor", function(done) {
-      var url = getMonitorUrl()
-      request(url, function(error, response, body) {
-        expect(response.statusCode).to.equal(200)
-        var info = JSON.parse(body)
-        expect(info).to.eql(monitor0)
-        done()
-      })
+      var path = getMonitorPath()
+      request(server)
+        .get(path)
+        .expect(function(res) {
+          var info = res.body
+          expect(info).to.eql(monitor0)
+        })
+        .expect(200,done)
     })
 
     it("execute a scenario", function(done) {
-      var url = getScenarioUrl(1,"Test Scenario")
-      request(url, function(error, response, body) {
-        expect(response.statusCode).to.equal(200)
-        done()
-      })
+      var path = getScenarioPath(1,"Test Scenario")
+      request(server)
+        .get(path)
+        .expect(200,done)
     })
 
     it("changed monitor", function(done) {
-      var url = getMonitorUrl()
-      request(url, function(error, response, body) {
-        expect(response.statusCode).to.equal(200)
-        var info = JSON.parse(body)
-        // TODO some testing
-        expect(info.history).to.have.length(monitor0.history.length+1)
-        expect(info.history[info.history.length-1]).to.have.property("title","Test Scenario: First")
-        expect(info.history[info.history.length-1]).to.have.property("value",1313*13)
-        done()
-      })
+      var path = getMonitorPath()
+      request(server)
+        .get(path)
+        .expect(function(res) {
+          var info = res.body
+          expect(info.history).to.have.length(monitor0.history.length+1)
+          expect(info.history[info.history.length-1]).to.have.property("title","Test Scenario: First")
+          expect(info.history[info.history.length-1]).to.have.property("value",1313*13)
+        })
+        .expect(200,done)
     })
 
   })
-
 
 })

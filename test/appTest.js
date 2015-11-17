@@ -248,6 +248,9 @@ describe("Carpaccio Store API", function() {
         .expect(function(res) {
           var info = res.body
           expect(info).to.have.length.above(3)
+          info.forEach(function(scenario) {
+            expect(scenario).to.have.deep.all.keys("id", "name", "description", "prices", "quantities", "states", "taxes", "discounts")
+          })
         })
         .expect(200,done)
     })

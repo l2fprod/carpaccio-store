@@ -199,6 +199,11 @@ app.get("/api/1/scenario.json", function (req, res) {
 	res.send(scenarios);
 })
 
+app.post("/api/1/testScenario.json", function (req, res) {
+  simulate(req.query.title,req.body)
+  res.send(monitor.history[monitor.history.length-1]);
+})
+
 var simulate = function(title,scenario) {
   console.log("Simulating scenario:",title,scenario)
 
@@ -217,6 +222,8 @@ var simulate = function(title,scenario) {
 
 var logApprovedValue = function(scenario,price,quantity,state) {
   var value = price*quantity
+  value = value>0 ? value : 0
+
   var approvedValue = value
 
   if ( scenario.discounts ) {
@@ -227,8 +234,7 @@ var logApprovedValue = function(scenario,price,quantity,state) {
       }
     }
     if ( !discount ) {
-      // TODO throw?
-      console.log("INTERNAL ERROR: no discount",value,scenario.discounts)
+      throw("No discount found")
     }
     approvedValue -= ( approvedValue * discount ) / 100.0
   }
@@ -236,8 +242,7 @@ var logApprovedValue = function(scenario,price,quantity,state) {
   if ( scenario.taxes ) {
     var tax = scenario.taxes[state]
     if ( !tax ) {
-      // TODO throw?
-      console.log("INTERNAL ERROR: no tax",state,scenario.taxes)
+      throw("Unknown state "+state)
     }
     approvedValue += ( approvedValue * tax ) / 100.0
   }

@@ -289,4 +289,109 @@ describe("Carpaccio Store API", function() {
 
   })
 
+  describe("Approved values", function() {
+    var getScenarioPath = function(title) {
+      return "/api/1/testScenario.json"
+        + "?title="+title
+    }
+
+    it("with tax", function(done) {
+      var path = getScenarioPath("Test with tax")
+      request(server)
+        .post(path)
+        .send({
+            id: 1013,
+            prices: [100],
+            states: ["FW"],
+            quantities: [1],
+            taxes: {"FW":13},
+            discounts: null
+          })
+        .expect(function(res) {
+          var info = res.body
+          console.log(info)
+          expect(info).to.have.property("approvedValue",113)
+        })
+        .expect(200,done)
+    })
+
+    it("with discount", function(done) {
+      var path = getScenarioPath("Test with discount")
+      request(server)
+        .post(path)
+        .send({
+            id: 1014,
+            prices: [100],
+            states: ["FW"],
+            quantities: [1],
+            taxes: null,
+            discounts: {"50":13}
+          })
+        .expect(function(res) {
+          var info = res.body
+          console.log(info)
+          expect(info).to.have.property("approvedValue",87)
+        })
+        .expect(200,done)
+    })
+
+    it("with tax and discount", function(done) {
+      var path = getScenarioPath("Test with tax and discount")
+      request(server)
+        .post(path)
+        .send({
+            id: 1014,
+            prices: [100],
+            states: ["FW"],
+            quantities: [1],
+            taxes: {"FW":13},
+            discounts: {"50":13}
+          })
+        .expect(function(res) {
+          var info = res.body
+          console.log(info)
+          expect(info).to.have.property("approvedValue",Number(Number((100-13)*1.13).toFixed(2)))
+        })
+        .expect(200,done)
+    })
+
+    it("with tax on missing state", function(done) {
+      var path = getScenarioPath("with tax on missing state")
+      request(server)
+        .post(path)
+        .send({
+            id: 1015,
+            prices: [100],
+            states: ["FW"],
+            quantities: [1],
+            taxes: {},
+            discounts: null
+          })
+        .expect(function(res) {
+          expect(res.error.text).to.contain("Unknown state FW")
+        })
+        .expect(500,done)
+    })
+
+    it("with negative value", function(done) {
+      var path = getScenarioPath("Test negative value")
+      request(server)
+        .post(path)
+        .send({
+            id: 1015,
+            prices: [100],
+            states: ["FW"],
+            quantities: [-1],
+            taxes: null,
+            discounts: null
+          })
+        .expect(function(res) {
+          expect(res.body).to.have.property("approvedValue",0)
+        })
+        .expect(200,done)
+    })
+
+
+  })
+
 })

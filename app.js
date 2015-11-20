@@ -227,14 +227,11 @@ var logApprovedValue = function(scenario,price,quantity,state) {
   var approvedValue = value
 
   if ( scenario.discounts ) {
-    var discount
+    var discount = 0
     for (var cap in scenario.discounts) {
       if ( value>=Number(cap) ) {
         discount = scenario.discounts[cap]
       }
-    }
-    if ( !discount ) {
-      throw("No discount found")
     }
     approvedValue -= ( approvedValue * discount ) / 100.0
   }

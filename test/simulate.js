@@ -28,7 +28,7 @@ request(getScenarioUrl(id,title), function(error, response, body) {
     console.log("Scenario returns",status,"error: ",error)
     return
   }
-  console.log("Scenarios",JSON.parse(body))
+  console.log("Scenarios",body)
 })
 
 request(getMonitorUrl(), function(error, response, body) {
@@ -37,5 +37,5 @@ request(getMonitorUrl(), function(error, response, body) {
     console.log("Monitor returns",status,"error: ",error)
     return
   }
-  console.log("Monitor",JSON.parse(body))
+  console.log("Monitor",body)
 })

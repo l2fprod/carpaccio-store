@@ -22,7 +22,7 @@
   {
     "id": 3,
     "name": "First discount, two states",
-    "description": "We need to retain biggest budget buyers: 50000/15%",
+    "description": "We need to retain biggest budget buyers",
     "prices": [ 1022 ],
     "quantities": [ 10, 50 ],
     "states": [ "UT", "TX" ],
@@ -36,7 +36,8 @@
     "prices": [ 1005 ],
     "quantities": [ 1, 5 ],
     "states": [ "UT", "NV", "TX", "AL", "CA" ],
-    "taxes": { "UT": 6.85, "NV":8, "TX":6.25 , "AL":4, "CA":8.25 },"discounts": { "50000": 15 }
+    "taxes": { "UT": 6.85, "NV":8, "TX":6.25 , "AL":4, "CA":8.25 },"discounts": { "50000": 15 },
+    "discounts": { "50000": 15 }
 },
   {
     "id": 5,

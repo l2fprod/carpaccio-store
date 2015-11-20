@@ -391,6 +391,23 @@ describe("Carpaccio Store API", function() {
         .expect(200,done)
     })
 
+    it("under discount", function(done) {
+      var path = getScenarioPath("Test under")
+      request(server)
+        .post(path)
+        .send({
+            id: 1015,
+            prices: [100],
+            states: ["FW"],
+            quantities: [-1],
+            taxes: null,
+            discounts: {"999":13}
+          })
+        .expect(function(res) {
+          expect(res.body).to.have.property("approvedValue",0)
+        })
+        .expect(200,done)
+    })
 
   })
 

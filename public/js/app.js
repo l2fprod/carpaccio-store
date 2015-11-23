@@ -41,6 +41,19 @@ appServices
             deferred.reject({ error: error, status: status });
           });
         return deferred.promise;
+      },
+      register: function(engineName, engineEndpoint) {
+        console.log("Registering new endpoint", arguments);
+        var deferred = $q.defer();
+        $http.post("/api/1/registerPricer.json",
+                   {name: engineName, url: engineEndpoint})
+          .success(function (data) {
+            deferred.resolve(data);
+          })
+          .error(function (error, status) {
+            deferred.reject({ error: error, status: status });
+          });
+        return deferred.promise;        
       }
     }
   }])
@@ -87,9 +100,18 @@ appControllers
           quantity: 1,
           state: null,
           prices: {}
+        },
+        registerPricer: {
         }
       }
 
+      $scope.loadPricingEngines = function() {
+        PricingService.load().then(function (engines) {
+          console.log("Found pricing engines", engines);
+          $scope.data.pricingEngines = engines;
+        });
+      }
+      
       $scope.priceBeforeTaxes = function () {
         if ($scope.data.cart.product) {
           return $scope.data.cart.product.price * $scope.data.cart.quantity
@@ -98,6 +120,18 @@ appControllers
         }
       }
 
+      $scope.registerPricingEngine = function() {
+        PricingService.register($scope.data.registerPricer.name, $scope.data.registerPricer.endpoint)
+        .then(function(result) {
+          console.log(result)
+          $('#registerPricerDialog').modal('hide')
+          // reload engines
+          $scope.loadPricingEngines()
+        }, function(error) {
+          console.error(error)
+        })
+      }
+      
       $scope.computePrices = function () {
         $scope.data.cart.prices = {}
 
@@ -123,14 +157,11 @@ appControllers
         })
       }
 
+      $scope.loadPricingEngines()
+      
       ProductService.load().then(function (products) {
         console.log("Found products", products);
         $scope.data.products = products;
-      });
-
-      PricingService.load().then(function (engines) {
-        console.log("Found pricing engines", engines);
-        $scope.data.pricingEngines = engines;
       });
 
   }])

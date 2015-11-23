@@ -4,12 +4,15 @@ var
   app = express(),
   cfenv = require('cfenv'),
   request = require('request'),
-  async = require('async')
+  async = require('async'),
+  uuid = require('uuid')
 
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.json()); // support json encoded bodies
-app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+app.use(bodyParser.urlencoded({
+  extended: true
+})); // support encoded bodies
 
 // load local VCAP configuration
 var vcapLocal = null
@@ -34,8 +37,10 @@ app.get("/api/1/products.json", function (req, res) {
 // currently send a static list
 var pricers = JSON.parse(require('fs').readFileSync('pricers.json', 'utf8'))
 var idToPricers = {}
+var nameToPricers = {}
 pricers.forEach(function (pricer) {
   idToPricers[pricer.id] = pricer
+  nameToPricers[pricer.name] = pricer
 })
 
 /**
@@ -51,16 +56,35 @@ app.get("/api/1/pricers.json", function (req, res) {
  */
 app.post("/api/1/registerPricer.json", function (req, res) {
   var pricer = req.body
-  console.log("Register pricer",pricer)
-  if ( idToPricers[pricer.id] ) {
+  console.log("Register pricer", pricer)
+
+  if (!pricer.name) {
     res.status(400).send({
-      error: "engine already exists"
+      error: "'name' parameter not found"
     })
     return
   }
+
+  if (nameToPricers[pricer.name]) {
+    res.status(400).send({
+      error: "engine name already exists"
+    })
+    return
+  }
+
+  if (!pricer.url) {
+    res.status(400).send({
+      error: "'url' parameter not found"
+    })
+    return
+  }
+
+  pricer.id = uuid.v1();
   pricers.push(pricer)
+
   idToPricers[pricer.id] = pricer
-  res.send(pricers);
+  nameToPricers[pricer.name] = pricer
+  res.send(pricer);
 })
 
 /**

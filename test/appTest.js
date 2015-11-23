@@ -67,7 +67,6 @@ describe("Carpaccio Store API", function() {
     var path = "/api/1/registerPricer.json"
 
     var testPricer = {
-      "id": "testing",
       "name": "Testing Pricer",
       "url": "http://testing/pricing"
     }
@@ -78,7 +77,9 @@ describe("Carpaccio Store API", function() {
         .post(path)
         .send(testPricer)
         .expect(function(res) {
-          expect(res.body).to.include(testPricer)
+          expect(res.body.name).to.equal(testPricer.name)
+          expect(res.body.url).to.equal(testPricer.url)
+          expect(res.body).to.have.property("id")
         })
         .expect(200,done)
     })

@@ -81,7 +81,9 @@
           No pricing engine found - we can't sell :(
         </div>
         <div ng-repeat="engine in data.pricingEngines">
-          {{engine.name}} - {{data.cart.prices[engine.id]}}
+          {{engine.name}} - 
+          <span ng-if="data.cart.prices[engine.id].totalPrice != null">{{data.cart.prices[engine.id].totalPrice}} euros</span>
+          <span ng-if="data.cart.prices[engine.id].totalPrice == null">{{data.cart.prices[engine.id]}}</span>
         </div>
         <button class="btn btn-lg btn-success" ng-click="computePrices()">Compute price</button>
 

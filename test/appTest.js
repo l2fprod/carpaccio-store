@@ -1,5 +1,7 @@
 var expect  = require("chai").expect;
 var request = require("supertest");
+var sinon = require("sinon");
+var requestInServer = require("request");
 
 describe("Carpaccio Store API", function() {
 
@@ -71,7 +73,6 @@ describe("Carpaccio Store API", function() {
       "url": "http://testing/pricing"
     }
 
-    // TODO allow to pass without restarting server
     it("returns new pricer", function(done) {
       request(server)
         .post(path)
@@ -117,15 +118,80 @@ describe("Carpaccio Store API", function() {
         .expect(501,done)
     })
 
-/*
-    it("returns a price", function(done) {
-      var url = getUrl("engine-1",13,1313,"UT")
-      request(url, function(error, response, body) {
-        expect(response.statusCode).to.equal(404)
+  })
+
+  describe("Price, stubbed", function() {
+    var path = "/api/1/registerPricer.json"
+
+    var testPricer = {
+      "name": "Stubbed Testing Pricer",
+      "url": "http://testing/pricing"
+    }
+
+    var getPath = function(pricer,price,quantity,state) {
+      return "/api/1/price.json"
+        +"?pricer="+pricer
+        +"&price="+price
+        +"&quantity="+quantity
+        +"&state="+state
+    }
+
+    var getMonitorPath = function() {
+      return "/api/1/monitor.json"
+    }
+
+    before(function(done){
+        sinon
+          .stub(requestInServer, 'get')
+          .yields(null, {
+            statusCode: 200
+          }, {
+            totalPrice: 1313.13
+          })
         done()
-      })
     })
-*/
+
+    after(function(done){
+      requestInServer.get.restore()
+      done()
+    })
+
+    var pricerId
+
+    it("register test pricer", function(done) {
+      request(server)
+        .post(path)
+        .send(testPricer)
+        .expect(function(res) {
+          expect(res.body.name).to.equal(testPricer.name)
+          expect(res.body.url).to.equal(testPricer.url)
+          expect(res.body).to.have.property("id")
+          pricerId = res.body.id
+        })
+        .expect(200,done)
+    })
+
+    it("returns a price", function(done) {
+      var path = getPath(pricerId,13,1313,"UT")
+      request(server)
+        .get(path)
+        .expect(function(res) {
+          expect(res.body.totalPrice).to.equal(1313.13)
+        })
+        .expect(200,done)
+    })
+
+    it("monitors the price", function(done) {
+      var path = getMonitorPath()
+      request(server)
+        .get(path)
+        .expect(function(res) {
+          expect(res.body.current.prices).to.have.property(testPricer.name,1313.13)
+          expect(res.body.current).to.have.property("count",0)
+          expect(res.body.current).to.have.property("value",0)
+        })
+        .expect(200,done)
+    })
 
   })
 

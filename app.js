@@ -131,7 +131,7 @@ var getPrice = function(pricerId,price,quantity,state, res) {
       console.log("[", engine.id, "] Got status", response.statusCode, "body:", body)
 
       if (body) {
-        monitoring.logPrice(engine.id,Number(body))
+        monitoring.logPrice(engine.id,Number(body.totalPrice))
         res.send(body)
       } else {
         monitoring.logPrice(engine.id,0)

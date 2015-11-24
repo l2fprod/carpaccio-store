@@ -24,12 +24,13 @@
     "bower": "^1.6.5",
     "cfenv": "^1.0.3",
     "express": "^4.13.3",
-    "request": "^2.65.0",
-    "uuid": "^2.0.1"
+    "request": "^2.65.0"
   },
   "devDependencies": {
     "supertest": "^1.1.0",
     "chai": "^3.4.1",
-    "mocha": "^2.3.3"
-  }
+    "mocha": "^2.3.3",
+    "sinon": "^1.17.2",
+    "uuid": "^2.0.1"
+}
 }

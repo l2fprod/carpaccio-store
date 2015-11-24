@@ -39,7 +39,7 @@
               <input type="radio" ng-model="data.cart.product" name="product" ng-value="product">
             </label>
           </div>
-          <div>{{product.price}} euros</div>
+          <div>${{product.price}}</div>
         </div>
       </div>
     </div>
@@ -57,9 +57,7 @@
       <div class="col-md-2 cart-section-title">Where should we ship?</div>
       <div class="col-md-8">
         <select class="form-control state" ng-model="data.cart.state">
-          <option value="CA">California (CA)</option>
           <option value="UT">Utah (UT)</option>
-          <option value="TX">Texas (TX)</option>
         </select>
       </div>
     </div>
@@ -67,7 +65,7 @@
     <div class="row raw-price-section">
       <div class="col-md-2 cart-section-title">Price before taxes</div>
       <div class="col-md-8 raw-price">
-        {{priceBeforeTaxes()}} euros
+        ${{priceBeforeTaxes()}}
       </div>
     </div>
 
@@ -77,16 +75,16 @@
         <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#registerPricerDialog">Register a pricing engine</button>
       </div>
       <div class="col-md-8 raw-price">
+        <button class="btn btn-lg btn-success" ng-click="computePrices()">Compute Total Price</button>
+
         <div class="alert alert-danger" ng-if="data.pricingEngines.length == 0">
           No pricing engine found - we can't sell :(
         </div>
         <div ng-repeat="engine in data.pricingEngines">
           {{engine.name}} - 
-          <span ng-if="data.cart.prices[engine.id].totalPrice != null">{{data.cart.prices[engine.id].totalPrice}} euros</span>
+          <span ng-if="data.cart.prices[engine.id].totalPrice != null">${{data.cart.prices[engine.id].totalPrice}}</span>
           <span ng-if="data.cart.prices[engine.id].totalPrice == null">{{data.cart.prices[engine.id]}}</span>
         </div>
-        <button class="btn btn-lg btn-success" ng-click="computePrices()">Compute price</button>
-
       </div>
     </div>
 

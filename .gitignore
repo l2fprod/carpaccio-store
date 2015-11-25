@@ -28,3 +28,5 @@ node_modules
 
 # Bower
 public/vendor
+
+vcap-local.json

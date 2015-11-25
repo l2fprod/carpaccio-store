@@ -2,12 +2,14 @@ var expect  = require("chai").expect;
 var request = require("supertest");
 var sinon = require("sinon");
 var requestInServer = require("request");
+var ports = require('ports')
 
 describe("Carpaccio Store API", function() {
 
   var server;
   before(function () {
-    server = require('../app.js');
+    var testPort = ports.getPort("carpaccio-store-tests")
+    server = require('../lib/server.js')("http://localhost:" + testPort, testPort, require('../lib/inmemory.js')());
   })
 
   after(function () {

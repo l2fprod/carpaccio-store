@@ -75,7 +75,6 @@ appServices
         // TODO post complete cart
         var value = cart.product.price*cart.quantity
         var deferred = $q.defer();
-        console.log("FW",cart,value)
         $http.get("/api/1/logTransaction.json?value="+value)
           .success(function (data) {
             deferred.resolve(data);

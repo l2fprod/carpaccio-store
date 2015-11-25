@@ -14,6 +14,50 @@ describe("Carpaccio Store API", function() {
     //server.close();
   })
 
+  // helpers for API
+
+  var getProductsPath = function() {
+    return "/api/1/products.json"
+  }
+
+  var getPricersPath = function() {
+    return "/api/1/pricers.json"
+  }
+
+  var getRegisterPricerPath = function() {
+    return "/api/1/registerPricer.json"
+  }
+
+  var getPricePath = function(pricer,price,quantity,state) {
+    return "/api/1/price.json"
+      +"?pricer="+pricer
+      +"&price="+price
+      +"&quantity="+quantity
+      +"&state="+state
+  }
+
+  var getMonitorPath = function() {
+    return "/api/1/monitor.json"
+  }
+
+  var getLogPath = function(value) {
+    return "/api/1/logTransaction.json?value="+value
+  }
+
+  var getHistoryPath = function(title) {
+    return "/api/1/logHistory.json?title="+title
+  }
+
+  var getScenarioPath = function(id,title) {
+    return "/api/1/scenario.json"
+      + (id?"?id="+id+"&title="+title:"")
+  }
+
+  var getTestScenarioPath = function(title) {
+    return "/api/1/testScenario.json"
+      + "?title="+title
+  }
+
   it('responds to /', function(done) {
     request(server)
       .get('/')
@@ -21,17 +65,16 @@ describe("Carpaccio Store API", function() {
   })
 
   describe("Products", function() {
-    var path = "/api/1/products.json"
 
     it("returns status 200", function(done) {
       request(server)
-        .get(path)
+        .get(getProductsPath())
         .expect(200,done)
     })
 
     it("returns products", function(done) {
       request(server)
-        .get(path)
+        .get(getProductsPath())
         .expect(function(res) {
           var info = res.body
           expect(info.length).to.be.above(3)
@@ -43,17 +86,16 @@ describe("Carpaccio Store API", function() {
   })
 
   describe("Pricers", function() {
-    var path = "/api/1/pricers.json"
 
     it("returns status 200", function(done) {
       request(server)
-        .get(path)
+        .get(getPricersPath())
         .expect(200,done)
     })
 
     it("returns pricers", function(done) {
       request(server)
-        .get(path)
+        .get(getPricersPath())
         .expect(function(res) {
           var info = res.body
           expect(info.length).to.be.above(2)
@@ -66,7 +108,6 @@ describe("Carpaccio Store API", function() {
   });
 
   describe("RegisterPricer", function() {
-    var path = "/api/1/registerPricer.json"
 
     var testPricer = {
       "name": "Testing Pricer",
@@ -75,7 +116,7 @@ describe("Carpaccio Store API", function() {
 
     it("returns new pricer", function(done) {
       request(server)
-        .post(path)
+        .post(getRegisterPricerPath())
         .send(testPricer)
         .expect(function(res) {
           expect(res.body.name).to.equal(testPricer.name)
@@ -87,7 +128,7 @@ describe("Carpaccio Store API", function() {
 
     it("returns error on duplicate pricer", function(done) {
       request(server)
-        .post(path)
+        .post(getRegisterPricerPath())
         .send(testPricer)
         .expect(400,done)
     })
@@ -96,23 +137,15 @@ describe("Carpaccio Store API", function() {
 
   describe("Price", function() {
 
-    var getPath = function(pricer,price,quantity,state) {
-      return "/api/1/price.json"
-        +"?pricer="+pricer
-        +"&price="+price
-        +"&quantity="+quantity
-        +"&state="+state
-    }
-
     it("returns status 404 on missing engine", function(done) {
-      var path = getPath("NO-engine",0,0,"")
+      var path = getPricePath("NO-engine",0,0,"")
       request(server)
         .get(path)
         .expect(404,done)
     })
 
     it("CURRENTLY returns status 501", function(done) {
-      var path = getPath("engine-1",1,1,"")
+      var path = getPricePath("engine-1",1,1,"")
       request(server)
         .get(path)
         .expect(501,done)
@@ -121,23 +154,10 @@ describe("Carpaccio Store API", function() {
   })
 
   describe("Price, stubbed", function() {
-    var path = "/api/1/registerPricer.json"
 
     var testPricer = {
       "name": "Stubbed Testing Pricer",
       "url": "http://testing/pricing"
-    }
-
-    var getPath = function(pricer,price,quantity,state) {
-      return "/api/1/price.json"
-        +"?pricer="+pricer
-        +"&price="+price
-        +"&quantity="+quantity
-        +"&state="+state
-    }
-
-    var getMonitorPath = function() {
-      return "/api/1/monitor.json"
     }
 
     before(function(done){
@@ -160,7 +180,7 @@ describe("Carpaccio Store API", function() {
 
     it("register test pricer", function(done) {
       request(server)
-        .post(path)
+        .post(getRegisterPricerPath())
         .send(testPricer)
         .expect(function(res) {
           expect(res.body.name).to.equal(testPricer.name)
@@ -172,7 +192,7 @@ describe("Carpaccio Store API", function() {
     })
 
     it("returns a price", function(done) {
-      var path = getPath(pricerId,13,1313,"UT")
+      var path = getPricePath(pricerId,13,1313,"UT")
       request(server)
         .get(path)
         .expect(function(res) {
@@ -196,26 +216,6 @@ describe("Carpaccio Store API", function() {
   })
 
   describe("Monitor", function() {
-
-    var getMonitorPath = function() {
-      return "/api/1/monitor.json"
-    }
-
-    var getPricePath = function(pricer,price,quantity,state) {
-      return "/api/1/price.json"
-        +"?pricer="+pricer
-        +"&price="+price
-        +"&quantity="+quantity
-        +"&state="+state
-    }
-
-    var getLogPath = function(value) {
-      return "/api/1/logTransaction.json?value="+value
-    }
-
-    var getHistoryPath = function(title) {
-      return "/api/1/logHistory.json?title="+title
-    }
 
     var monitor0
 
@@ -287,15 +287,6 @@ describe("Carpaccio Store API", function() {
 
   describe("Scenario", function() {
 
-    var getMonitorPath = function() {
-      return "/api/1/monitor.json"
-    }
-
-    var getScenarioPath = function(id,title) {
-      return "/api/1/scenario.json"
-        + (id?"?id="+id+"&title="+title:"")
-    }
-
     var monitor0
 
     it("snapshot monitor", function(done) {
@@ -357,13 +348,9 @@ describe("Carpaccio Store API", function() {
   })
 
   describe("Approved values", function() {
-    var getScenarioPath = function(title) {
-      return "/api/1/testScenario.json"
-        + "?title="+title
-    }
 
     it("with tax", function(done) {
-      var path = getScenarioPath("Test with tax")
+      var path = getTestScenarioPath("Test with tax")
       request(server)
         .post(path)
         .send({
@@ -383,7 +370,7 @@ describe("Carpaccio Store API", function() {
     })
 
     it("with discount", function(done) {
-      var path = getScenarioPath("Test with discount")
+      var path = getTestScenarioPath("Test with discount")
       request(server)
         .post(path)
         .send({
@@ -403,7 +390,7 @@ describe("Carpaccio Store API", function() {
     })
 
     it("with tax and discount", function(done) {
-      var path = getScenarioPath("Test with tax and discount")
+      var path = getTestScenarioPath("Test with tax and discount")
       request(server)
         .post(path)
         .send({
@@ -423,7 +410,7 @@ describe("Carpaccio Store API", function() {
     })
 
     it("with tax on missing state", function(done) {
-      var path = getScenarioPath("with tax on missing state")
+      var path = getTestScenarioPath("with tax on missing state")
       request(server)
         .post(path)
         .send({
@@ -441,7 +428,7 @@ describe("Carpaccio Store API", function() {
     })
 
     it("with negative value", function(done) {
-      var path = getScenarioPath("Test negative value")
+      var path = getTestScenarioPath("Test negative value")
       request(server)
         .post(path)
         .send({
@@ -459,7 +446,7 @@ describe("Carpaccio Store API", function() {
     })
 
     it("under discount", function(done) {
-      var path = getScenarioPath("Test under")
+      var path = getTestScenarioPath("Test under")
       request(server)
         .post(path)
         .send({

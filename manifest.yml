@@ -1,4 +1,10 @@
+declared-services:
+  carpaccio-store-db:
+    label: cloudantNoSQLDB
+    plan: Shared
 applications:
-- name: carpaccio-store
+- services:
+  - carpaccio-store-db
+  name: carpaccio-store
   host: carpaccio-store
   memory: 256M

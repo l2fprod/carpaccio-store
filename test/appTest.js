@@ -271,7 +271,7 @@ describe("Carpaccio Store API", function() {
         .expect(200,done)
     })
 
-    it("has pushes history", function(done) {
+    it("has pushed history", function(done) {
       var path = getHistoryPath("Test History")
       request(server)
         .get(path)

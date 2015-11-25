@@ -46,10 +46,6 @@ describe("Carpaccio Store API", function() {
     return "/api/1/logTransaction.json?value="+value
   }
 
-  var getHistoryPath = function(title) {
-    return "/api/1/logHistory.json?title="+title
-  }
-
   var getScenarioPath = function(id,title) {
     return "/api/1/scenario.json"
       + (id?"?id="+id+"&title="+title:"")
@@ -267,20 +263,6 @@ describe("Carpaccio Store API", function() {
           var current = info.current
           expect(current.count).to.equal(monitor0.current.count+1)
           expect(current.value).to.equal(monitor0.current.value+13)
-        })
-        .expect(200,done)
-    })
-
-    it("has pushed history", function(done) {
-      var path = getHistoryPath("Test History")
-      request(server)
-        .get(path)
-        .expect(function(res) {
-          var info = res.body
-          expect(info.current.count).to.equal(0)
-          expect(info.current.value).to.equal(0)
-          expect(info.history).to.have.length(monitor0.history.length+1)
-          expect(info.history[info.history.length-1]).to.have.property("title","Test History")
         })
         .expect(200,done)
     })

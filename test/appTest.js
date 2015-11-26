@@ -56,6 +56,11 @@ describe("Carpaccio Store API", function() {
       + "?title="+title
   }
 
+  var getClearPath = function(target) {
+    return "/api/1/clear.json"
+      + "?target="+target
+  }
+
   it('responds to /', function(done) {
     request(server)
       .get('/')
@@ -99,6 +104,22 @@ describe("Carpaccio Store API", function() {
           expect(info.length).to.be.above(2)
           expect(info[0]).to.have.property("id")
           expect(info[0]).to.have.property("name")
+        })
+        .expect(200,done)
+    })
+   
+    it("clears pricers", function(done) {
+      request(server)
+        .get(getClearPath("pricers"))
+        .expect(200,done)
+    })
+
+    it("cleared pricers", function(done) {
+      request(server)
+        .get(getPricersPath())
+        .expect(function(res) {
+          var info = res.body
+          expect(info).to.have.length(0)
         })
         .expect(200,done)
     })
@@ -327,6 +348,25 @@ describe("Carpaccio Store API", function() {
           expect(info.history[info.history.length-1]).to.have.property("approvedValue",1313*13*1.03)
         })
         .expect(200,done)
+    })
+    
+    it("clears monitor", function(done) {
+        var path = getClearPath("monitor")
+        request(server)
+            .get(path)
+            .expect(200,done)
+    })
+    
+    it("cleared monitor", function(done) {
+        var path = getMonitorPath()
+        request(server)
+            .get(path)
+            .expect(function(res) {
+                var info = res.body
+                expect(info).to.eql({
+                })
+            })
+            .expect(200,done)
     })
 
   })

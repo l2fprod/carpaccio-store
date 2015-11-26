@@ -108,22 +108,6 @@ describe("Carpaccio Store API", function() {
         .expect(200,done)
     })
    
-    it("clears pricers", function(done) {
-      request(server)
-        .get(getClearPath("pricers"))
-        .expect(200,done)
-    })
-
-    it("cleared pricers", function(done) {
-      request(server)
-        .get(getPricersPath())
-        .expect(function(res) {
-          var info = res.body
-          expect(info).to.have.length(0)
-        })
-        .expect(200,done)
-    })
-
   });
 
   describe("RegisterPricer", function() {
@@ -287,7 +271,7 @@ describe("Carpaccio Store API", function() {
         })
         .expect(200,done)
     })
-
+    
   })
 
   describe("Scenario", function() {
@@ -350,25 +334,6 @@ describe("Carpaccio Store API", function() {
         .expect(200,done)
     })
     
-    it("clears monitor", function(done) {
-        var path = getClearPath("monitor")
-        request(server)
-            .get(path)
-            .expect(200,done)
-    })
-    
-    it("cleared monitor", function(done) {
-        var path = getMonitorPath()
-        request(server)
-            .get(path)
-            .expect(function(res) {
-                var info = res.body
-                expect(info).to.eql({
-                })
-            })
-            .expect(200,done)
-    })
-
   })
 
   describe("Approved values", function() {
@@ -487,6 +452,51 @@ describe("Carpaccio Store API", function() {
         .expect(200,done)
     })
 
+  })
+  
+  describe("Clearing", function() {
+
+    it("clears pricers", function(done) {
+      request(server)
+        .get(getClearPath("pricers"))
+        .expect(200,done)
+    })
+
+    it("cleared pricers", function(done) {
+      request(server)
+        .get(getPricersPath())
+        .expect(function(res) {
+          var info = res.body
+          expect(info).to.have.length(0)
+        })
+        .expect(200,done)
+    })
+    
+    it("clears monitor", function(done) {
+        var path = getClearPath("monitor")
+        request(server)
+            .get(path)
+            .expect(200,done)
+    })
+    
+    it("cleared monitor", function(done) {
+        var path = getMonitorPath()
+        request(server)
+            .get(path)
+            .expect(function(res) {
+                var info = res.body
+                expect(info).to.eql({
+                    current: {
+                        count: 0,
+                        value: 0,
+                        prices: {}
+                    },
+                    history: []
+                })
+            })
+            .expect(200,done)
+    })
+  
   })
 
 })

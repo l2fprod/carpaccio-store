@@ -29,13 +29,17 @@ request(getScenarioUrl(id,title), function(error, response, body) {
     return
   }
   console.log("Scenarios",body)
+  showMonitor()
 })
 
-request(getMonitorUrl(), function(error, response, body) {
-  if ( error ) {
-    var status = response ? response["statusCode"] : "no response"
-    console.log("Monitor returns",status,"error: ",error)
-    return
-  }
-  console.log("Monitor",body)
-})
+var showMonitor = function() {
+    
+    request(getMonitorUrl(), function(error, response, body) {
+        if ( error ) {
+            var status = response ? response["statusCode"] : "no response"
+            console.log("Monitor returns",status,"error: ",error)
+            return
+        }
+        console.log("Monitor",body)
+    })
+}

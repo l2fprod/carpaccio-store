@@ -6,7 +6,11 @@
   
   curl http://localhost:6001/api/1/clear.json?target=pricers
   curl http://localhost:6001/api/1/clear.json?target=monitor
-  
+ 
+  curl http://localhost:6001/api/1/monitor.json
+ 
+  curl -H "Content-Type: application/json" -d '{name:"Fred", url:"http://fredl-nodered.mybluemix.net/pricing"}' POST http://localhost:6001/api/1/registerPricer.json
+ 
   curl http://carpaccio-store.eu-gb.mybluemix.net/api/1/clear.json?target=pricers
   curl http://carpaccio-store.eu-gb.mybluemix.net/api/1/clear.json?target=monitor
   

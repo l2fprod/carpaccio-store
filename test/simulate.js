@@ -1,6 +1,15 @@
 /*
   USAGE
   node test/simulate.js <ID> <TITLE> [<URL>]
+  
+  node test/simulate.js 1 FW1 http://carpaccio-store.eu-gb.mybluemix.net
+  
+  curl http://localhost:6001/api/1/clear.json?target=pricers
+  curl http://localhost:6001/api/1/clear.json?target=monitor
+  
+  curl http://carpaccio-store.eu-gb.mybluemix.net/api/1/clear.json?target=pricers
+  curl http://carpaccio-store.eu-gb.mybluemix.net/api/1/clear.json?target=monitor
+  
 */
 
 var request = require("request");
@@ -21,7 +30,7 @@ var getMonitorUrl = function() {
   return base + "/api/1/monitor.json"
 }
 
-console.log("Simulate scenario",id,title)
+console.log("Simulate scenario",id,title,base)
 request(getScenarioUrl(id,title), function(error, response, body) {
   if ( error ) {
     var status = response ? response["statusCode"] : "no response"
@@ -33,7 +42,6 @@ request(getScenarioUrl(id,title), function(error, response, body) {
 })
 
 var showMonitor = function() {
-    
     request(getMonitorUrl(), function(error, response, body) {
         if ( error ) {
             var status = response ? response["statusCode"] : "no response"

@@ -456,9 +456,24 @@ describe("Carpaccio Store API", function() {
   
   describe("Clearing", function() {
 
+    var pricers0 
+    
+    it("returns pricers", function(done) {
+      request(server)
+        .get(getPricersPath())
+        .expect(function(res) {
+          pricers0 = res.body
+        })
+        .expect(200,done)
+    })
+
     it("clears pricers", function(done) {
       request(server)
         .get(getClearPath("pricers"))
+        .expect(function(res) {
+          var info = res.body
+          expect(res.body).to.eql(pricers0)
+        })       
         .expect(200,done)
     })
 
@@ -471,12 +486,26 @@ describe("Carpaccio Store API", function() {
         })
         .expect(200,done)
     })
+
+    var monitor0
+    
+    it("gets current monitor", function(done) {
+        request(server)
+            .get(getMonitorPath())
+            .expect(function(res) {
+                monitor0 = res.body
+            })
+            .expect(200,done)
+    })
     
     it("clears monitor", function(done) {
         var path = getClearPath("monitor")
         request(server)
             .get(path)
-            .expect(200,done)
+            .expect(function(res) {
+                expect(res.body).to.eql(monitor0)
+             })
+             .expect(200,done)
     })
     
     it("cleared monitor", function(done) {
@@ -484,16 +513,8 @@ describe("Carpaccio Store API", function() {
         request(server)
             .get(path)
             .expect(function(res) {
-                var info = res.body
-                expect(info).to.eql({
-                    current: {
-                        count: 0,
-                        value: 0,
-                        prices: {}
-                    },
-                    history: []
-                })
-            })
+                expect(res.body).to.eql({})
+             })
             .expect(200,done)
     })
   

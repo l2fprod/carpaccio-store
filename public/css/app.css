@@ -84,6 +84,12 @@ a {
   margin-bottom: 20px;
 }
 
+.register-error {
+  text-align: right;
+  color: red;
+  font-size: 10pt;
+}
+
 footer {
   background: rgba(0, 0, 0, 0.5);
   color: #fff;

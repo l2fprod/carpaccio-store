@@ -127,7 +127,9 @@ appControllers
           // reload engines
           $scope.loadPricingEngines()
         }, function(error) {
-          console.error(error)
+            console.error(error)
+            var message = (error && error.error && error.error.error) ? error.error.error : ""+error        
+            $('#registerPricerDialog').find('#registerError').text(message)
         })
       }
       
@@ -151,7 +153,13 @@ appControllers
               $scope.data.cart.prices[engine.id] = result
             }, function (error) {
               console.error(error);
-              $scope.data.cart.prices[engine.id] = "Error:" + error.error + ", Status:" + error.status
+              if ( error.error && error.error.error ) {
+                $scope.data.cart.prices[engine.id] = "Error: " + error.error.error + ", Status:" + error.status
+              } else if ( error.error && error.error.message ) {
+                $scope.data.cart.prices[engine.id] = "Error: " + error.error.message
+              }else {
+                $scope.data.cart.prices[engine.id] = "Error: " + error
+              }
             })
         })
       }

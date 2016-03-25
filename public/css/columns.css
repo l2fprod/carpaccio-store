@@ -61,3 +61,22 @@ body {
   width: 64px;
   height: 64px;
 }
+
+.product-link, .product-link:hover, .product-link:visited {
+  text-decoration: none;
+  color: black;
+}
+
+.product {
+  padding: 20px;
+}
+
+.product:hover {
+  background-color: #5bc0de; 
+  color: #ffffff;
+}
+
+.product-selected {
+  background-color: #3fafde; 
+  color: #ffffff;
+}

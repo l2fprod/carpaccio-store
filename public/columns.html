@@ -32,16 +32,16 @@
     <div class="row">
       <div class="col-md-4">
         <h3>Order</h3>
-        <div class="media" ng-repeat="product in data.products">
-          <div class="media-left">
-            <a href="#">
+        <a href="" class="product-link" ng-click="data.cart.product = product" ng-repeat="product in data.products">
+          <div class="media product" ng-class="{'product-selected':data.cart.product==product}">
+            <div class="media-left">
               <img class="media-object product-icon" ng-src="{{product.image}}" alt="{{product.name}}">
-            </a>
+            </div>
+            <div class="media-body">
+              <h4 class="media-heading product-name">{{product.name}}</h4> ${{product.price}}
+            </div>
           </div>
-          <div class="media-body">
-            <h4 class="media-heading"><input type="radio" ng-model="data.cart.product" name="product" ng-value="product">{{product.name}}</h4> ${{product.price}}
-          </div>
-        </div>
+        </a>
 
         <h5>How many of this juicy breed?</h5>
         <form>

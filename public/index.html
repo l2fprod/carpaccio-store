@@ -13,86 +13,114 @@
 
   <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="vendor/bootstrap/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/columns.css">
 </head>
 
-<body ng-controller="AppController" ng-cloak>  
-  <div class="intro">
-    What is this all about? <a href="https://github.com/l2fprod/carpaccio-store">Find out more...</a>
-  </div>
-  
-  <div class="title-container">
-    <span class="title">Elephant Carpaccio</span>
-  </div>
-
-  <div class="cart-container container">
-    <div class="row cart-section products">
-      <div class="col-md-2 cart-section-title">Enjoy our best products</div>
-      <div class="col-md-10">
-        <div class="product well" ng-repeat="product in data.products">
-          <div>
-            <label>
-              {{product.name}}
-              <br/>
-              <img class="product-image" ng-src="{{product.image}}" />
-              <br/>
-              <input type="radio" ng-model="data.cart.product" name="product" ng-value="product">
-            </label>
-          </div>
-          <div>${{product.price}}</div>
-        </div>
-      </div>
+<body ng-controller="AppController" ng-cloak>
+  <div class="container">
+    <div class="header clearfix">
+      <nav>
+        <ul class="nav nav-pills pull-right">
+          <li role="presentation"><a href="https://github.com/l2fprod/carpaccio-store">Find out more...</a></li>
+        </ul>
+      </nav>
+      <h3 class="title text-muted">Elephant Carpaccio</h3>
     </div>
+  </div>
 
-    <div class="row cart-section">
-      <div class="col-md-2 cart-section-title">How many of this juicy breed?</div>
-      <div class="col-md-8">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <h3>Order</h3>
+
+        <h5 class="text-muted">Pick a product</h5>
+        <a href="" class="product-link" ng-click="data.cart.product = product" ng-repeat="product in data.products">
+          <div class="media product" ng-class="{'product-selected':data.cart.product==product}">
+            <div class="media-left">
+              <img class="media-object product-icon" ng-src="{{product.image}}" alt="{{product.name}}">
+            </div>
+            <div class="media-body">
+              <h4 class="media-heading product-name">{{product.name}}</h4> ${{product.price}}
+            </div>
+          </div>
+        </a>
+
+        <h5 class="text-muted">Enter a quantity</h5>
         <form>
           <input class="form-control quantity" type="number" min="1" id="quantity" value="1" ng-model="data.cart.quantity">
         </form>
       </div>
-    </div>
+      <div class="col-md-4">
+        <h3>Shipping Address</h3>
 
-    <div class="row cart-section">
-      <div class="col-md-2 cart-section-title">Where should we ship?</div>
-      <div class="col-md-8">
-        <select class="form-control state" ng-model="data.cart.state">
-          <option value="UT">Utah (UT)</option>
-        </select>
-      </div>
-    </div>
+        <h5 class="text-muted">Select a state</h5>
+        <a href="" class="product-link" ng-click="data.cart.state = state.code" ng-repeat="state in data.states">
+          <div class="media product" ng-class="{'product-selected':data.cart.state==state.code}">
+            <div class="media-left">
+            </div>
+            <div class="media-body">
+              <h4 class="media-heading product-name">{{state.display}} ({{state.code}})</h4>
+            </div>
+          </div>
+        </a>
 
-    <div class="row raw-price-section">
-      <div class="col-md-2 cart-section-title">Price before taxes</div>
-      <div class="col-md-8 raw-price">
-        ${{priceBeforeTaxes()}}
       </div>
-    </div>
+      <div class="col-md-4">
+        <h3>Pricing</h3>
 
-    <div class="row actual-price-section">
-      <div class="col-md-2 cart-section-title">
-        Price with taxes
-        <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#registerPricerDialog">Register a pricing engine</button>
-      </div>
-      <div class="col-md-8 raw-price">
-        <button class="btn btn-lg btn-success" ng-click="computePrices()">Compute Total Price</button>
+        <h5 class="text-muted">Price before taxes</h5>
+        <div class="price">${{priceBeforeTaxes()}}</div>
+
+        <h5 class="text-muted">Price after taxes</h5>
 
         <div class="alert alert-danger" ng-if="data.pricingEngines.length == 0">
           No pricing engine found - we can't sell :(
         </div>
-        <div ng-repeat="engine in data.pricingEngines">
-          {{engine.name}} - 
-          <span ng-if="data.cart.prices[engine.id].totalPrice != null">${{data.cart.prices[engine.id].totalPrice}}</span>
-          <span ng-if="data.cart.prices[engine.id].totalPrice == null">{{data.cart.prices[engine.id]}}</span>
+
+        <button class="btn btn-success" ng-click="computePrices()" ng-disabled="!data.cart.product || !data.cart.state" ng-if="data.pricingEngines.length > 0">Compute Total Price</button>
+
+        <div class="row pricers" ng-repeat="engine in data.pricingEngines">
+          <div class="col-md-8">
+            <div class="pricer">{{$index+1}}. {{engine.name}}</div>
+          </div>
+          <div class="col-md-4">
+            <div class="price" ng-if="data.cart.prices[engine.id].hasOwnProperty('totalPrice')">${{data.cart.prices[engine.id].totalPrice}}</div>
+            <div class="price-error" ng-if="data.cart.prices[engine.id] && !data.cart.prices[engine.id].hasOwnProperty('totalPrice')">
+              <a href="" ng-click="showError(engine)">Error</a>
+            </div>
+          </div>
+        </div>
+        
+        <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#registerPricerDialog">Register a pricing engine</button>
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    made by <a href="https://github.com/frawa">frank</a> and <a href="https://twitter.com/l2fprod">fred</a>
+  </footer>
+
+  <div id="viewErrorDialog" class="modal fade">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Error</h4>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <textarea rows="10" class="form-control" id="errorText"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
-
   </div>
-
-  <footer>
-    made by <a href="https://github.com/frawa">frank</a> and <a href="https://twitter.com/l2fprod">fred</a>
-  </footer>
 
   <div id="registerPricerDialog" class="modal fade">
     <div class="modal-dialog">
@@ -108,7 +136,7 @@
               <input class="form-control" type="text" name="name" ng-model="data.registerPricer.name" required/>
             </div>
             <div id="registerError" class="register-error">
-                <label/>
+              <label/>
             </div>
             <div class="form-group">
               <label>Endpoint*</label>
@@ -121,11 +149,8 @@
           <button type="submit" class="btn btn-primary" ng-click="registerPricingEngine()">Register</button>
         </div>
       </div>
-      <!-- /.modal-content -->
     </div>
-    <!-- /.modal-dialog -->
   </div>
-  <!-- /.modal -->
 
   <script src="vendor/angular/angular.min.js"></script>
   <script src="vendor/jquery/dist/jquery.min.js"></script>

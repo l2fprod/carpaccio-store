@@ -16,6 +16,22 @@ appServices
       }
     }
   }])
+  .service('StateService', ['$http', '$q', function ($http, $q) {
+    return {
+      load: function () {
+        console.log("Loading states...");
+        var deferred = $q.defer();
+        $http.get("/api/1/states.json")
+          .success(function (data) {
+            deferred.resolve(data);
+          })
+          .error(function () {
+            deferred.reject();
+          });
+        return deferred.promise;
+      }
+    }
+  }])
   .service('PricingService', ['$http', '$q', function ($http, $q) {
     return {
       load: function () {
@@ -38,22 +54,30 @@ appServices
             deferred.resolve(data);
           })
           .error(function (error, status) {
-            deferred.reject({ error: error, status: status });
+            deferred.reject({
+              error: error,
+              status: status
+            });
           });
         return deferred.promise;
       },
-      register: function(engineName, engineEndpoint) {
+      register: function (engineName, engineEndpoint) {
         console.log("Registering new endpoint", arguments);
         var deferred = $q.defer();
-        $http.post("/api/1/registerPricer.json",
-                   {name: engineName, url: engineEndpoint})
+        $http.post("/api/1/registerPricer.json", {
+            name: engineName,
+            url: engineEndpoint
+          })
           .success(function (data) {
             deferred.resolve(data);
           })
           .error(function (error, status) {
-            deferred.reject({ error: error, status: status });
+            deferred.reject({
+              error: error,
+              status: status
+            });
           });
-        return deferred.promise;        
+        return deferred.promise;
       }
     }
   }])
@@ -73,9 +97,9 @@ appServices
       },
       log: function (cart) {
         // TODO post complete cart
-        var value = cart.product.price*cart.quantity
+        var value = cart.product.price * cart.quantity
         var deferred = $q.defer();
-        $http.get("/api/1/logTransaction.json?value="+value)
+        $http.get("/api/1/logTransaction.json?value=" + value)
           .success(function (data) {
             deferred.resolve(data);
           })
@@ -89,28 +113,28 @@ appServices
 
 var appControllers = angular.module('appControllers', []);
 appControllers
-  .controller('AppController', ['$scope', 'ProductService', 'PricingService', 'MonitorService',
-  function ($scope, ProductService, PricingService, MonitorService) {
+  .controller('AppController', ['$scope', 'ProductService', 'PricingService', 'MonitorService', 'StateService',
+  function ($scope, ProductService, PricingService, MonitorService, StateService) {
       $scope.data = {
         products: [],
         pricingEngines: [],
+        states: [],
         cart: {
           product: null,
           quantity: 1,
           state: null,
           prices: {}
         },
-        registerPricer: {
-        }
+        registerPricer: {}
       }
 
-      $scope.loadPricingEngines = function() {
+      $scope.loadPricingEngines = function () {
         PricingService.load().then(function (engines) {
           console.log("Found pricing engines", engines);
           $scope.data.pricingEngines = engines;
         });
       }
-      
+
       $scope.priceBeforeTaxes = function () {
         if ($scope.data.cart.product) {
           return $scope.data.cart.product.price * $scope.data.cart.quantity
@@ -119,29 +143,29 @@ appControllers
         }
       }
 
-      $scope.registerPricingEngine = function() {
+      $scope.registerPricingEngine = function () {
         PricingService.register($scope.data.registerPricer.name, $scope.data.registerPricer.endpoint)
-        .then(function(result) {
-          console.log(result)
-          $('#registerPricerDialog').modal('hide')
-          // reload engines
-          $scope.loadPricingEngines()
-        }, function(error) {
+          .then(function (result) {
+            console.log(result)
+            $('#registerPricerDialog').modal('hide')
+              // reload engines
+            $scope.loadPricingEngines()
+          }, function (error) {
             console.error(error)
-            var message = (error && error.error && error.error.error) ? error.error.error : ""+error        
+            var message = (error && error.error && error.error.error) ? error.error.error : "" + error
             $('#registerPricerDialog').find('#registerError').text(message)
-        })
+          })
       }
-      
+
       $scope.computePrices = function () {
         $scope.data.cart.prices = {}
 
         MonitorService.log($scope.data.cart)
-        .then(function(result) {
-          console.log("Monitor:", result)
-        }, function (error) {
-          console.error(error);
-        })
+          .then(function (result) {
+            console.log("Monitor:", result)
+          }, function (error) {
+            console.error(error);
+          })
 
         $.each($scope.data.pricingEngines, function (_, engine) {
           PricingService.price(engine,
@@ -153,11 +177,11 @@ appControllers
               $scope.data.cart.prices[engine.id] = result
             }, function (error) {
               console.error(error);
-              if ( error.error && error.error.error ) {
+              if (error.error && error.error.error) {
                 $scope.data.cart.prices[engine.id] = "Error: " + error.error.error + ", Status:" + error.status
-              } else if ( error.error && error.error.message ) {
+              } else if (error.error && error.error.message) {
                 $scope.data.cart.prices[engine.id] = "Error: " + error.error.message
-              }else {
+              } else {
                 $scope.data.cart.prices[engine.id] = "Error: " + error
               }
             })
@@ -165,18 +189,22 @@ appControllers
       }
 
       $scope.loadPricingEngines()
-      
+
       ProductService.load().then(function (products) {
         console.log("Found products", products);
         $scope.data.products = products;
       });
-
+    
+      StateService.load().then(function(states) {
+        console.log("Found states", states);
+        $scope.data.states = states;
+      });
   }])
 
-  .controller('DashboardController', ['$scope', 'MonitorService',
+.controller('DashboardController', ['$scope', 'MonitorService',
   function ($scope, MonitorService) {
     $scope.data = {
-        monitor: {}
+      monitor: {}
     }
     MonitorService.load().then(function (monitor) {
       console.log("Found monitor", monitor);

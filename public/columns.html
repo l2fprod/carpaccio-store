@@ -53,7 +53,7 @@
 
         <h5>Where should we ship?</h5>
         <select class="form-control state" ng-model="data.cart.state">
-          <option value="UT">Utah (UT)</option>
+          <option ng-repeat="state in data.states" value="{{state.code}}">{{state.display}} ({{state.code}})</option>
         </select>
 
         <h5>Price before taxes</h5> ${{priceBeforeTaxes()}}

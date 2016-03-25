@@ -1,7 +1,14 @@
+@import url(//fonts.googleapis.com/css?family=Lobster);
+
 /* Space out content a bit */
 body {
   padding-top: 20px;
-  padding-bottom: 20px;
+  margin-bottom: 50px;
+}
+
+.title {
+  font-family: 'Lobster', cursive;
+  font-size: 25px;
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
@@ -36,6 +43,7 @@ body {
 .footer {
   padding: 10px;
   color: #777;
+  background: white;
   border-top: 1px solid #e5e5e5;
 }
 
@@ -79,4 +87,19 @@ body {
 .product-selected {
   background-color: #3fafde; 
   color: #ffffff;
+}
+
+.pricer {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 20px;
+  padding: 10px;
+}
+
+.price, .price-error {
+  text-align: right;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 10px;
 }

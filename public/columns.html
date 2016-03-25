@@ -24,7 +24,7 @@
           <li role="presentation"><a href="https://github.com/l2fprod/carpaccio-store">Find out more...</a></li>
         </ul>
       </nav>
-      <h3 class="text-muted">Elephant Carpaccio</h3>
+      <h3 class="title text-muted">Elephant Carpaccio</h3>
     </div>
   </div>
 
@@ -32,6 +32,8 @@
     <div class="row">
       <div class="col-md-4">
         <h3>Order</h3>
+
+        <h5 class="text-muted">Pick a product</h5>
         <a href="" class="product-link" ng-click="data.cart.product = product" ng-repeat="product in data.products">
           <div class="media product" ng-class="{'product-selected':data.cart.product==product}">
             <div class="media-left">
@@ -43,7 +45,7 @@
           </div>
         </a>
 
-        <h5>How many of this juicy breed?</h5>
+        <h5 class="text-muted">Enter a quantity</h5>
         <form>
           <input class="form-control quantity" type="number" min="1" id="quantity" value="1" ng-model="data.cart.quantity">
         </form>
@@ -51,30 +53,46 @@
       <div class="col-md-4">
         <h3>Shipping Address</h3>
 
-        <h5>Where should we ship?</h5>
-        <select class="form-control state" ng-model="data.cart.state">
-          <option ng-repeat="state in data.states" value="{{state.code}}">{{state.display}} ({{state.code}})</option>
-        </select>
+        <h5 class="text-muted">Select a state</h5>
+        <a href="" class="product-link" ng-click="data.cart.state = state.code" ng-repeat="state in data.states">
+          <div class="media product" ng-class="{'product-selected':data.cart.state==state.code}">
+            <div class="media-left">
+            </div>
+            <div class="media-body">
+              <h4 class="media-heading product-name">{{state.display}} ({{state.code}})</h4>
+            </div>
+          </div>
+        </a>
 
-        <h5>Price before taxes</h5> ${{priceBeforeTaxes()}}
       </div>
       <div class="col-md-4">
         <h3>Pricing</h3>
-        <button class="btn btn-success" ng-click="computePrices()">Compute Total Price</button>
+
+        <h5 class="text-muted">Price before taxes</h5>
+        <div class="price">${{priceBeforeTaxes()}}</div>
+
+        <h5 class="text-muted">Price after taxes</h5>
 
         <div class="alert alert-danger" ng-if="data.pricingEngines.length == 0">
           No pricing engine found - we can't sell :(
         </div>
-        <div class="row" ng-repeat="engine in data.pricingEngines">
-          <div class="col-md-6">
-            {{engine.name}}
+
+        <button class="btn btn-success" ng-click="computePrices()" ng-disabled="!data.cart.product || !data.cart.state" ng-if="data.pricingEngines.length > 0">Compute Total Price</button>
+
+        <div class="row pricers" ng-repeat="engine in data.pricingEngines">
+          <div class="col-md-8">
+            <div class="pricer">{{$index+1}}. {{engine.name}}</div>
           </div>
-          <div class="col-md-6">
-            <span ng-if="data.cart.prices[engine.id].totalPrice != null">${{data.cart.prices[engine.id].totalPrice}}</span>
-            <span ng-if="data.cart.prices[engine.id].totalPrice == null">{{data.cart.prices[engine.id]}}</span>
+          <div class="col-md-4">
+            <div class="price" ng-if="data.cart.prices[engine.id].hasOwnProperty('totalPrice')">${{data.cart.prices[engine.id].totalPrice}}</div>
+            <div class="price-error" ng-if="data.cart.prices[engine.id] && !data.cart.prices[engine.id].hasOwnProperty('totalPrice')">
+              <a href="" ng-click="showError(engine)">Error</a>
+            </div>
           </div>
         </div>
+        
         <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#registerPricerDialog">Register a pricing engine</button>
+
       </div>
     </div>
   </div>
@@ -82,6 +100,27 @@
   <footer class="footer">
     made by <a href="https://github.com/frawa">frank</a> and <a href="https://twitter.com/l2fprod">fred</a>
   </footer>
+
+  <div id="viewErrorDialog" class="modal fade">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Error</h4>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <textarea rows="10" class="form-control" id="errorText"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div id="registerPricerDialog" class="modal fade">
     <div class="modal-dialog">
@@ -110,11 +149,8 @@
           <button type="submit" class="btn btn-primary" ng-click="registerPricingEngine()">Register</button>
         </div>
       </div>
-      <!-- /.modal-content -->
     </div>
-    <!-- /.modal-dialog -->
   </div>
-  <!-- /.modal -->
 
   <script src="vendor/angular/angular.min.js"></script>
   <script src="vendor/jquery/dist/jquery.min.js"></script>

@@ -178,14 +178,19 @@ appControllers
             }, function (error) {
               console.error(error);
               if (error.error && error.error.error) {
-                $scope.data.cart.prices[engine.id] = "Error: " + error.error.error + ", Status:" + error.status
+                $scope.data.cart.prices[engine.id] = "Error: " + error.error.error + ", Status:" + error.status;
               } else if (error.error && error.error.message) {
-                $scope.data.cart.prices[engine.id] = "Error: " + error.error.message
+                $scope.data.cart.prices[engine.id] = "Error: " + error.error.message;
               } else {
-                $scope.data.cart.prices[engine.id] = "Error: " + error
+                $scope.data.cart.prices[engine.id] = "Error: " + JSON.stringify(error);
               }
             })
         })
+      }
+      
+      $scope.showError = function(engine) {
+        $('#errorText').text($scope.data.cart.prices[engine.id]);
+        $('#viewErrorDialog').modal('show');
       }
 
       $scope.loadPricingEngines()
